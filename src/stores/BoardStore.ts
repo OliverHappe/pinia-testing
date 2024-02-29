@@ -1,16 +1,9 @@
 import { PayloadOf } from "@/types/ActionFactory";
-import {
-  AnyBoardAction,
-  CreateCardAction,
-  ILockCardAction,
-  IUnlockCardAction,
-  LockCardAction,
-  UnlockCardAction,
-  UpdateCardAction,
-} from "@/types/BoardStore/Actions";
+import { AnyBoardAction, LockCardAction, UnlockCardAction, UpdateCardAction } from "@/types/BoardStore/Actions";
 import { User } from "@/types/UserStore/User";
-import { defineStore, getActivePinia, storeToRefs } from "pinia";
+import { defineStore } from "pinia";
 import { ComputedRef, computed, ref } from "vue";
+import { io } from "socket.io-client";
 
 interface Card {
   id: string;
@@ -28,6 +21,21 @@ interface Board {
 }
 
 export const useBoardStore = defineStore("BoardStore", () => {
+  const socket = io("http://localhost:3000");
+  // listen for new messages
+  socket.on("connect", function () {
+    console.log("connected");
+  });
+  socket.on("update-card-replay", function (data: any) {
+    console.log("update-card-replay", data);
+  });
+  socket.onAny((event, ...args) => {
+    if (["update-card", "lock-card", "unlock-card"].includes(event)) {
+      console.log(event, args);
+      dispatchAction({ type: event, payload: args[0] }, false);
+    }
+  });
+
   const board = ref<Board>({
     id: "board1",
     columns: ["column1", "column2"],
@@ -55,8 +63,8 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
   const lockedCards = ref<Record<Card["id"], User["id"]>>({ card2: "user23" });
 
-  function dispatchAction(action: AnyBoardAction) {
-    console.log(action);
+  function dispatchAction(action: AnyBoardAction, emit = true) {
+    console.log("dispatchAction", action, emit);
 
     switch (action.type) {
       // case "delete-card":
@@ -72,16 +80,20 @@ export const useBoardStore = defineStore("BoardStore", () => {
         unlockCard(action.payload);
         break;
     }
+
+    if (emit === true) {
+      socket.emit(action.type, action.payload);
+    }
     // throw new Error("Action not implemented: " + action.type);
   }
 
-  function lockCard(payload: ILockCardAction["payload"]) {
+  function lockCard(payload: PayloadOf<typeof LockCardAction>) {
     // frontend only action
     lockedCards.value[payload.id] = payload["userId"];
   }
 
-  function unlockCard(payload: MoveCardResponse["payload"]) {
-    // @/server/v3/api
+  function unlockCard(payload: PayloadOf<typeof UnlockCardAction>) {
+    // @/server/v3/api9
     // coming from the api-client
     delete lockedCards.value[payload.id];
   }
@@ -91,9 +103,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
     cards.value[payload.id] = payload;
   }
 
-  function selectCardLock(
-    cardId: Card["id"]
-  ): ComputedRef<User["id"] | undefined> {
+  function selectCardLock(cardId: Card["id"]): ComputedRef<User["id"] | undefined> {
     return computed(() => lockedCards.value[cardId]);
   }
 
@@ -101,9 +111,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
     return computed(() => cards.value[cardId]);
   }
 
-  function selectColumn(
-    columnId: Column["id"]
-  ): ComputedRef<Column | undefined> {
+  function selectColumn(columnId: Column["id"]): ComputedRef<Column | undefined> {
     return computed(() => columns.value[columnId]);
   }
 
@@ -131,4 +139,10 @@ export const useBoardStore = defineStore("BoardStore", () => {
  *  - Factory for creating actions easily!
  *  - Effects against our api
  *  - moving cards!
+ *
+ * - maybe the whole store should not interact with the server-(REST)-api at all ?!
+ *   - the backend just takes and broadcasts any action that was processed on a client
+ *   - and effects could be implemented in the backend
+ * - the majority of actions could be untyped... only the ones that need an effect-implementation need to have a defined type
+ * -
  */

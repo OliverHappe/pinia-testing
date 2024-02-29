@@ -5,27 +5,21 @@ export declare type AnyBoardAction =
   | IUpdateCardAction
   | IDeleteCardAction
   | ILockCardAction
-  | CreateCardResponse
+  // | CreateCardResponse
   | IUnlockCardAction;
 
-declare type BoardActions =
-  | "update-card"
-  | "delete-card"
-  | "lock-card"
-  | "unlock-card"
-  | "no-payload-action";
+declare type BoardActions = "update-card" | "delete-card" | "lock-card" | "unlock-card" | "no-payload-action";
 
 export const UpdateCardAction = createAction<IUpdateCardAction>("update-card");
 export const DeleteCardAction = createAction<IDeleteCardAction>("delete-card");
 export const LockCardAction = createAction<ILockCardAction>("lock-card");
 export const UnlockCardAction = createAction<IUnlockCardAction>("unlock-card");
-export const NoPayloadAction =
-  createAction<INoPayloadAction>("no-payload-action");
-export const CreateCardAction = createAction<ICreateCardAction>("");
-export const CreateCardActionSuccess = createAction<CreateCardResponse>("");
-export const CreateCardActionFail = createAction<>("");
+export const NoPayloadAction = createAction<INoPayloadAction>("no-payload-action");
+// export const CreateCardAction = createAction<ICreateCardAction>("");
+// export const CreateCardActionSuccess = createAction<CreateCardResponse>("");
+// export const CreateCardActionFail = createAction<>("");
 
-useBoardStore.dispatch(CreateCardAction);
+// useBoardStore.dispatch(CreateCardAction);
 export interface BaseAction {
   type: string;
   payload?: any;

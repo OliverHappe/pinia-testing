@@ -39,8 +39,7 @@ const lockCard = (cardId: string) =>
     type: "lock-card",
     payload: { id: cardId, userId: userStore.currentUser.id },
   });
-const unlockCard = (cardId: string) =>
-  boardStore.dispatchAction({ type: "unlock-card", payload: { id: cardId } });
+const unlockCard = (cardId: string) => boardStore.dispatchAction({ type: "unlock-card", payload: { id: cardId } });
 const updateCard = () => {
   boardStore.dispatchAction({
     type: "update-card",
