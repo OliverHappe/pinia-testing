@@ -1,28 +1,52 @@
 <template>
   <div v-if="card !== undefined" class="card">
-    {{ card.text }}
+    <div>
+      {{ card.id }}
+      {{ boardStore.selectCardLock(card.id) }}
+    </div>
+
     <input
       v-model="card.text"
       @focus="lockCard(card.id)"
       @blur="unlockCard(card.id)"
+      @change="updateCard"
+      :disabled="isDisabled"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useBoardStore } from "@/stores/BoardStore";
-import { defineProps } from "vue";
+import { useUserStore } from "@/stores/UserStore";
+import { computed, defineProps } from "vue";
 
-const BoardStore = useBoardStore();
+const boardStore = useBoardStore();
+const userStore = useUserStore();
 
 const props = defineProps<{ id: string }>();
 
-const card = BoardStore.selectCard(props.id);
+const card = boardStore.selectCard(props.id);
+
+const isDisabled = computed(() => {
+  const userId = boardStore.selectCardLock(props.id).value;
+  return (
+    userId !== undefined && userId !== userStore.selectCurrentUser().value.id
+  );
+});
 
 const lockCard = (cardId: string) =>
-  BoardStore.dispatchAction({ type: "lock-card", payload: { id: cardId } });
+  boardStore.dispatchAction({
+    type: "lock-card",
+    payload: { id: cardId, userId: userStore.selectCurrentUser().value.id },
+  });
 const unlockCard = (cardId: string) =>
-  BoardStore.dispatchAction({ type: "unlock-card", payload: { id: cardId } });
+  boardStore.dispatchAction({ type: "unlock-card", payload: { id: cardId } });
+const updateCard = () => {
+  boardStore.dispatchAction({
+    type: "update-card",
+    payload: { id: props.id, text: card.value?.text ?? "" },
+  });
+};
 </script>
 
 <style scoped>
@@ -32,5 +56,7 @@ const unlockCard = (cardId: string) =>
   padding: 0.75rem;
   border-radius: 0.25rem;
   min-height: 150px;
+  display: flex;
+  flex-direction: column;
 }
 </style>

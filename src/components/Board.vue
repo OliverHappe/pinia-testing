@@ -1,8 +1,10 @@
 <template>
-  <div class="board">
-    {{ BoardStore.lockedCards }}<br />
-    <div v-for="columnId in BoardStore.board.columns" :key="columnId">
-      <Column :id="columnId"></Column>
+  <div>
+    <div>{{ boardStore.lockedCards }}</div>
+    <div class="board">
+      <div v-for="columnId in boardStore.board.columns" :key="columnId">
+        <Column :id="columnId"></Column>
+      </div>
     </div>
   </div>
 </template>
@@ -11,7 +13,7 @@
 import Column from "@/components/Column.vue";
 import { useBoardStore } from "@/stores/BoardStore";
 
-const BoardStore = useBoardStore();
+const boardStore = useBoardStore();
 </script>
 
 <style scoped>

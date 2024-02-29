@@ -20,7 +20,7 @@ export interface DeleteCardAction extends BaseAction {
 
 export interface LockCardAction extends BaseAction {
   type: "lock-card";
-  payload: { id: string };
+  payload: { id: string; userId: string };
 }
 
 export interface UnlockCardAction extends BaseAction {

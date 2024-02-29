@@ -6,7 +6,7 @@ import {
 } from "@/types/BoardStore/Actions";
 import { User } from "@/types/UserStore/User";
 import { defineStore } from "pinia";
-import { ComputedRef, computed, ref } from "vue";
+import { ComputedRef, computed, ref, Ref } from "vue";
 
 interface Card {
   id: string;
