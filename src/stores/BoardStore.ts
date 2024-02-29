@@ -1,11 +1,15 @@
+import { PayloadOf } from "@/types/ActionFactory";
 import {
-  AnyAction,
+  AnyBoardAction,
+  CreateCardAction,
+  ILockCardAction,
+  IUnlockCardAction,
   LockCardAction,
   UnlockCardAction,
   UpdateCardAction,
 } from "@/types/BoardStore/Actions";
 import { User } from "@/types/UserStore/User";
-import { defineStore } from "pinia";
+import { defineStore, getActivePinia, storeToRefs } from "pinia";
 import { ComputedRef, computed, ref } from "vue";
 
 interface Card {
@@ -51,8 +55,9 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
   const lockedCards = ref<Record<Card["id"], User["id"]>>({ card2: "user23" });
 
-  function dispatchAction(action: AnyAction) {
+  function dispatchAction(action: AnyBoardAction) {
     console.log(action);
+
     switch (action.type) {
       // case "delete-card":
       //   throw new Error("Action not implemented: " + action.type);
@@ -70,15 +75,18 @@ export const useBoardStore = defineStore("BoardStore", () => {
     // throw new Error("Action not implemented: " + action.type);
   }
 
-  function lockCard(payload: LockCardAction["payload"]) {
+  function lockCard(payload: ILockCardAction["payload"]) {
+    // frontend only action
     lockedCards.value[payload.id] = payload["userId"];
   }
 
-  function unlockCard(payload: UnlockCardAction["payload"]) {
+  function unlockCard(payload: MoveCardResponse["payload"]) {
+    // @/server/v3/api
+    // coming from the api-client
     delete lockedCards.value[payload.id];
   }
 
-  function updateCard(payload: UpdateCardAction["payload"]) {
+  function updateCard(payload: PayloadOf<typeof UpdateCardAction>) {
     console.log("updating the card");
     cards.value[payload.id] = payload;
   }
