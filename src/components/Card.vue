@@ -27,17 +27,17 @@ const props = defineProps<{ id: string }>();
 
 const card = boardStore.selectCard(props.id);
 
+const cardLock = boardStore.selectCardLock(props.id);
+
 const isDisabled = computed(() => {
-  const userId = boardStore.selectCardLock(props.id).value;
-  return (
-    userId !== undefined && userId !== userStore.selectCurrentUser().value.id
-  );
+  const userId = cardLock.value;
+  return userId !== undefined && userId !== userStore.currentUser.id;
 });
 
 const lockCard = (cardId: string) =>
   boardStore.dispatchAction({
     type: "lock-card",
-    payload: { id: cardId, userId: userStore.selectCurrentUser().value.id },
+    payload: { id: cardId, userId: userStore.currentUser.id },
   });
 const unlockCard = (cardId: string) =>
   boardStore.dispatchAction({ type: "unlock-card", payload: { id: cardId } });
