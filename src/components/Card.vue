@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { useBoardStore } from "@/stores/BoardStore";
 import { useUserStore } from "@/stores/UserStore";
+import { LockCardRequestAction, UnlockCardRequestAction, UpdateCardRequestAction } from "@/types/BoardStore/Actions";
 import { computed, defineProps } from "vue";
 
 const boardStore = useBoardStore();
@@ -35,17 +36,9 @@ const isDisabled = computed(() => {
 });
 
 const lockCard = (cardId: string) =>
-  boardStore.dispatchAction({
-    type: "lock-card",
-    payload: { id: cardId, userId: userStore.currentUser.id },
-  });
-const unlockCard = (cardId: string) => boardStore.dispatchAction({ type: "unlock-card", payload: { id: cardId } });
-const updateCard = () => {
-  boardStore.dispatchAction({
-    type: "update-card",
-    payload: { id: props.id, text: card.value?.text ?? "" },
-  });
-};
+  boardStore.dispatch(LockCardRequestAction({ id: cardId, userId: userStore.currentUser.id }));
+const unlockCard = (cardId: string) => boardStore.dispatch(UnlockCardRequestAction({ id: cardId }));
+const updateCard = () => boardStore.dispatch(UpdateCardRequestAction({ id: props.id, text: card.value?.text ?? "" }));
 </script>
 
 <style scoped>

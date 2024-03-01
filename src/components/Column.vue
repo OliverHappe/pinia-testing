@@ -11,7 +11,6 @@
 <script setup lang="ts">
 import Card from "@/components/Card.vue";
 import { useBoardStore } from "@/stores/BoardStore";
-import { LockCardAction } from "@/types/BoardStore/Actions";
 import { defineProps } from "vue";
 
 const BoardStore = useBoardStore();
@@ -19,7 +18,6 @@ const BoardStore = useBoardStore();
 const props = defineProps<{ id: string }>();
 
 const column = BoardStore.selectColumn(props.id);
-BoardStore.dispatchAction(LockCardAction({ id: "sdf", userId: "sadfsdf" }));
 </script>
 
 <style scoped>

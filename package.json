@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@vueuse/core": "^10.9.0",
     "core-js": "^3.8.3",
     "pinia": "^2.1.7",
     "socket.io-client": "^4.7.4",

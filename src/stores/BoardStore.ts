@@ -1,9 +1,15 @@
-import { PayloadOf } from "@/types/ActionFactory";
-import { AnyBoardAction, LockCardAction, UnlockCardAction, UpdateCardAction } from "@/types/BoardStore/Actions";
+import { useBoardApi } from "@/stores/BoardApi";
+import {
+  AnyBoardAction,
+  LockCardSuccessAction,
+  UnlockCardRequestAction,
+  UnlockCardSuccessAction,
+  UpdateCardRequestAction,
+  UpdateCardSuccessAction,
+} from "@/types/BoardStore/Actions";
 import { User } from "@/types/UserStore/User";
 import { defineStore } from "pinia";
 import { ComputedRef, computed, ref } from "vue";
-import { io } from "socket.io-client";
 
 interface Card {
   id: string;
@@ -21,17 +27,7 @@ interface Board {
 }
 
 export const useBoardStore = defineStore("BoardStore", () => {
-  const socket = io("http://localhost:3000");
-  // listen for new messages
-  socket.on("connect", function () {
-    console.log("connected");
-  });
-  socket.onAny((event, ...args) => {
-    if (["update-card", "lock-card", "unlock-card"].includes(event)) {
-      console.log(event, args);
-      dispatchAction({ type: event, payload: args[0] }, false);
-    }
-  });
+  const { emitOnSocket } = useBoardApi(dispatch);
 
   const board = ref<Board>({
     id: "board1",
@@ -60,44 +56,46 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
   const lockedCards = ref<Record<Card["id"], User["id"]>>({ card2: "user23" });
 
-  function dispatchAction(action: AnyBoardAction, emit = true) {
-    console.log("dispatchAction", action, emit);
-
+  function dispatch(action: AnyBoardAction) {
+    console.log("dispatchAction", action);
     switch (action.type) {
-      // case "delete-card":
-      //   throw new Error("Action not implemented: " + action.type);
-      //   break;
-      case "update-card":
-        updateCard(action.payload);
+      case "lock-card-request":
+      case "unlock-card-request":
+      case "update-card-request":
+        emitOnSocket(action);
         break;
-      case "lock-card":
-        lockCard(action.payload);
-        break;
-      case "unlock-card":
-        unlockCard(action.payload);
-        break;
-    }
 
-    if (emit === true) {
-      socket.emit(action.type, action.payload);
+      case "update-card-success":
+        updateCard(action);
+        break;
+      case "lock-card-success":
+        lockCard(action);
+        break;
+      case "unlock-card-success":
+        unlockCard(action);
+        break;
+
+      case "lock-card-failure":
+      case "unlock-card-failure":
+      case "update-card-failure":
+        throw new Error(action.type + " " + JSON.stringify(action.payload));
     }
-    // throw new Error("Action not implemented: " + action.type);
   }
 
-  function lockCard(payload: PayloadOf<typeof LockCardAction>) {
+  function lockCard(action: ReturnType<typeof LockCardSuccessAction>) {
     // frontend only action
-    lockedCards.value[payload.id] = payload["userId"];
+    lockedCards.value.id = action.payload.userId;
   }
 
-  function unlockCard(payload: PayloadOf<typeof UnlockCardAction>) {
+  function unlockCard(action: ReturnType<typeof UnlockCardSuccessAction>) {
     // @/server/v3/api9
     // coming from the api-client
-    delete lockedCards.value[payload.id];
+    delete lockedCards.value[action.payload.id];
   }
 
-  function updateCard(payload: PayloadOf<typeof UpdateCardAction>) {
+  function updateCard(action: ReturnType<typeof UpdateCardSuccessAction>) {
     console.log("updating the card");
-    cards.value[payload.id] = payload;
+    cards.value[action.payload.id] = action.payload;
   }
 
   function selectCardLock(cardId: Card["id"]): ComputedRef<User["id"] | undefined> {
@@ -113,7 +111,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
   }
 
   return {
-    dispatchAction,
+    dispatch,
     board: computed(() => board.value),
     columns: computed(() => columns.value),
     cards: computed(() => cards.value),
