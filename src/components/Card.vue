@@ -58,4 +58,7 @@ const updateCard = () => {
   display: flex;
   flex-direction: column;
 }
+.card:has(input:disabled) {
+  background: lightgrey;
+}
 </style>

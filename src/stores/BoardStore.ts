@@ -26,9 +26,6 @@ export const useBoardStore = defineStore("BoardStore", () => {
   socket.on("connect", function () {
     console.log("connected");
   });
-  socket.on("update-card-replay", function (data: any) {
-    console.log("update-card-replay", data);
-  });
   socket.onAny((event, ...args) => {
     if (["update-card", "lock-card", "unlock-card"].includes(event)) {
       console.log(event, args);
