@@ -121,23 +121,3 @@ export const useBoardStore = defineStore("BoardStore", () => {
     selectColumn,
   };
 });
-
-/**
- * Next steps:
- *  - [x] implement updateCard
- *  - [x] extend locking mechanism to check against a user (we need a user store that holds our current user)
- *    - [x] implement isCardLocked selector
- *    - [x] implement faked UserStore
- *    - [x] refactor lockedCards to know the user that has the lock
- *    - [x] visualize card being locked for somebody else
- *    - [x] ensure to be able to edit a card that is locked for the current user
- *  - Factory for creating actions easily!
- *  - Effects against our api
- *  - moving cards!
- *
- * - maybe the whole store should not interact with the server-(REST)-api at all ?!
- *   - the backend just takes and broadcasts any action that was processed on a client
- *   - and effects could be implemented in the backend
- * - the majority of actions could be untyped... only the ones that need an effect-implementation need to have a defined type
- * -
- */
