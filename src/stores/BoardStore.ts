@@ -84,7 +84,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
   function lockCard(action: ReturnType<typeof LockCardSuccessAction>) {
     // frontend only action
-    lockedCards.value.id = action.payload.userId;
+    lockedCards.value[action.payload.id] = action.payload.userId;
   }
 
   function unlockCard(action: ReturnType<typeof UnlockCardSuccessAction>) {
