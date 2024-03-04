@@ -60,6 +60,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
       case "lock-card-request":
       case "unlock-card-request":
       case "update-card-request":
+      case "delete-card-request":
         emitOnSocket(action);
         break;
 
@@ -72,10 +73,14 @@ export const useBoardStore = defineStore("BoardStore", () => {
       case "unlock-card-success":
         unlockCard(action);
         break;
+      case "delete-card-success":
+        deleteCard(action.payload.id);
+        break;
 
       case "lock-card-failure":
       case "unlock-card-failure":
       case "update-card-failure":
+      case "delete-card-failure":
         throw new Error(action.type + " " + JSON.stringify(action.payload));
     }
   }
@@ -106,6 +111,11 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
   function selectColumn(columnId: Column["id"]): ComputedRef<Column | undefined> {
     return computed(() => columns.value[columnId]);
+  }
+
+  function deleteCard(cardId: Card["id"]) {
+    console.log("deleting the card:" + cardId);
+    delete cards.value[cardId];
   }
 
   return {

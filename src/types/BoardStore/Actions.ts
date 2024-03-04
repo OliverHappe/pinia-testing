@@ -4,7 +4,9 @@ export declare type AnyBoardAction =
   | IUpdateCardRequestAction
   | IUpdateCardSuccessAction
   | IUpdateCardFailureAction
-  | IDeleteCardAction
+  | IDeleteCardRequestAction
+  | IDeleteCardSuccessAction
+  | IDeleteCardFailureAction
   | ILockCardRequestAction
   | ILockCardSuccessAction
   | ILockCardFailureAction
@@ -16,7 +18,9 @@ export declare type AnyBoardAction =
 export const UpdateCardRequestAction = createAction<IUpdateCardRequestAction>("update-card-request");
 export const UpdateCardSuccessAction = createAction<IUpdateCardSuccessAction>("update-card-success");
 export const UpdateCardFailureAction = createAction<IUpdateCardFailureAction>("update-card-failure");
-export const DeleteCardAction = createAction<IDeleteCardAction>("delete-card");
+export const DeleteCardRequestAction = createAction<IDeleteCardRequestAction>("delete-card-request");
+export const DeleteCardSuccessAction = createAction<IDeleteCardSuccessAction>("delete-card-success");
+export const DeleteCardFailureAction = createAction<IDeleteCardFailureAction>("delete-card-failure");
 export const LockCardRequestAction = createAction<ILockCardRequestAction>("lock-card-request");
 export const LockCardSuccessAction = createAction<ILockCardSuccessAction>("lock-card-success");
 export const LockCardFailureAction = createAction<ILockCardFailureAction>("lock-card-failure");
@@ -44,9 +48,19 @@ interface IUpdateCardFailureAction extends BaseAction {
   payload: unknown;
 }
 
-interface IDeleteCardAction extends BaseAction {
-  type: "delete-card";
+interface IDeleteCardRequestAction extends BaseAction {
+  type: "delete-card-request";
   payload: { id: string };
+}
+
+interface IDeleteCardSuccessAction extends BaseAction {
+  type: "delete-card-success";
+  payload: { id: string };
+}
+
+interface IDeleteCardFailureAction extends BaseAction {
+  type: "delete-card-failure";
+  payload: unknown;
 }
 
 interface ILockCardRequestAction extends BaseAction {

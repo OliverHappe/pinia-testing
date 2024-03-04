@@ -20,7 +20,7 @@
 import { useBoardStore } from "@/stores/BoardStore";
 import { useUserStore } from "@/stores/UserStore";
 import {
-  DeleteCardAction,
+  DeleteCardRequestAction,
   LockCardRequestAction,
   UnlockCardRequestAction,
   UpdateCardRequestAction,
@@ -45,7 +45,7 @@ const lockCard = (cardId: string) =>
   boardStore.dispatch(LockCardRequestAction({ id: cardId, userId: userStore.currentUser.id }));
 const unlockCard = (cardId: string) => boardStore.dispatch(UnlockCardRequestAction({ id: cardId }));
 const updateCard = () => boardStore.dispatch(UpdateCardRequestAction({ id: props.id, text: card.value?.text ?? "" }));
-const onDelete = () => boardStore.dispatch(DeleteCardAction({ id: props.id }));
+const onDelete = () => boardStore.dispatch(DeleteCardRequestAction({ id: props.id }));
 </script>
 
 <style scoped>
