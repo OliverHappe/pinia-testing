@@ -2,9 +2,7 @@ import { useBoardApi } from "@/stores/BoardApi";
 import {
   AnyBoardAction,
   LockCardSuccessAction,
-  UnlockCardRequestAction,
   UnlockCardSuccessAction,
-  UpdateCardRequestAction,
   UpdateCardSuccessAction,
 } from "@/types/BoardStore/Actions";
 import { User } from "@/types/UserStore/User";

@@ -28,7 +28,7 @@ export const UnlockCardFailureAction = createAction<IUnlockCardFailureAction>("u
 export const NoPayloadAction = createAction<INoPayloadAction>("no-payload-action");
 export interface BaseAction {
   type: string;
-  payload?: any;
+  payload?: unknown;
 }
 
 interface IUpdateCardRequestAction extends BaseAction {
