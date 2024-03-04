@@ -1,6 +1,7 @@
 import { useBoardApi } from "@/stores/BoardApi";
 import {
   AnyBoardAction,
+  DeleteCardSuccessAction,
   LockCardSuccessAction,
   UnlockCardSuccessAction,
   UpdateCardSuccessAction,
@@ -74,7 +75,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
         unlockCard(action);
         break;
       case "delete-card-success":
-        deleteCard(action.payload.id);
+        deleteCard(action);
         break;
 
       case "lock-card-failure":
@@ -113,8 +114,13 @@ export const useBoardStore = defineStore("BoardStore", () => {
     return computed(() => columns.value[columnId]);
   }
 
-  function deleteCard(cardId: Card["id"]) {
-    console.log("deleting the card:" + cardId);
+  function deleteCard(action: ReturnType<typeof DeleteCardSuccessAction>): void {
+    const { cardId, columnId } = action.payload;
+    console.log(`deleting the card: ${cardId} from column: ${columnId}`);
+
+    const cardIndex = columns.value[columnId].cards.findIndex((id) => id === cardId);
+
+    columns.value[columnId].cards.splice(cardIndex, 1);
     delete cards.value[cardId];
   }
 

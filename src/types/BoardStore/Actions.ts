@@ -50,12 +50,12 @@ interface IUpdateCardFailureAction extends BaseAction {
 
 interface IDeleteCardRequestAction extends BaseAction {
   type: "delete-card-request";
-  payload: { id: string };
+  payload: { columnId: string; cardId: string };
 }
 
 interface IDeleteCardSuccessAction extends BaseAction {
   type: "delete-card-success";
-  payload: { id: string };
+  payload: { columnId: string; cardId: string };
 }
 
 interface IDeleteCardFailureAction extends BaseAction {
