@@ -1,8 +1,9 @@
 <template>
   <div v-if="card !== undefined" class="card">
-    <div>
+    <div class="card-header">
       {{ card.id }}
       {{ boardStore.selectCardLock(card.id) }}
+      <button class="delete-button" @click="onDelete">X</button>
     </div>
 
     <input
@@ -18,7 +19,12 @@
 <script setup lang="ts">
 import { useBoardStore } from "@/stores/BoardStore";
 import { useUserStore } from "@/stores/UserStore";
-import { LockCardRequestAction, UnlockCardRequestAction, UpdateCardRequestAction } from "@/types/BoardStore/Actions";
+import {
+  DeleteCardAction,
+  LockCardRequestAction,
+  UnlockCardRequestAction,
+  UpdateCardRequestAction,
+} from "@/types/BoardStore/Actions";
 import { computed, defineProps } from "vue";
 
 const boardStore = useBoardStore();
@@ -39,6 +45,7 @@ const lockCard = (cardId: string) =>
   boardStore.dispatch(LockCardRequestAction({ id: cardId, userId: userStore.currentUser.id }));
 const unlockCard = (cardId: string) => boardStore.dispatch(UnlockCardRequestAction({ id: cardId }));
 const updateCard = () => boardStore.dispatch(UpdateCardRequestAction({ id: props.id, text: card.value?.text ?? "" }));
+const onDelete = () => boardStore.dispatch(DeleteCardAction({ id: props.id }));
 </script>
 
 <style scoped>
@@ -53,5 +60,15 @@ const updateCard = () => boardStore.dispatch(UpdateCardRequestAction({ id: props
 }
 .card:has(input:disabled) {
   background: lightgrey;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.delete-card {
+  align-self: flex-end;
 }
 </style>
