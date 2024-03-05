@@ -3,7 +3,7 @@
     <div class="card-header">
       {{ card.id }}
       {{ boardStore.selectCardLock(card.id) }}
-      <button class="delete-button" @click="onDelete">X</button>
+      <button v-if="!isDisabled" class="delete-button" @click="onDelete">X</button>
     </div>
 
     <input
