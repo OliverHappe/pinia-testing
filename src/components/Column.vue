@@ -30,6 +30,12 @@
           <Card :data-card-id="element" :id="element" :key="index" @delete:card="onDeleteCard" class="draggable"></Card>
         </template>
       </Sortable>
+      <div class="column">
+        <div v-for="cardId in column.cards" :key="cardId">
+          <Card :id="cardId" @delete:card="onDeleteCard"></Card>
+        </div>
+        <button @click="createCard">+ Add Card</button>
+      </div>
     </div>
   </template>
 </template>
@@ -38,10 +44,11 @@
 import Card from "@/components/Card.vue";
 import { useBoardStore } from "@/stores/BoardStore";
 import {
-  DeleteCardRequestAction,
-  LockCardRequestAction,
-  MoveCardRequestAction,
-  UnlockCardRequestAction,
+  deleteCardRequestAction,
+  lockCardRequestAction,
+  // moveCardRequestAction,
+  unlockCardRequestAction,
+  createCardRequestAction,
 } from "@/types/BoardStore/Actions";
 import { defineProps, nextTick } from "vue";
 import { Sortable } from "sortablejs-vue3";
@@ -56,11 +63,11 @@ const props = defineProps<{ id: string }>();
 
 const column = BoardStore.selectColumn(props.id);
 
-const onDeleteCard = (cardId: string) => BoardStore.dispatch(DeleteCardRequestAction({ columnId: props.id, cardId }));
+const onDeleteCard = (cardId: string) => BoardStore.dispatch(deleteCardRequestAction({ columnId: props.id, cardId }));
 
 const onDragStart = (event: SortableEvent) => {
   const cardId = extractDataAttribute(event.item, "cardId") as string;
-  BoardStore.dispatch(LockCardRequestAction({ id: cardId, userId: userStore.currentUser.id }));
+  BoardStore.dispatch(lockCardRequestAction({ id: cardId, userId: userStore.currentUser.id }));
 };
 
 const onDragEnd = async (event: SortableEvent) => {
@@ -74,14 +81,16 @@ const onDragEnd = async (event: SortableEvent) => {
   const fromColumnId = extractDataAttribute(from, "columnId") as string;
   const cardId = extractDataAttribute(event.item, "cardId") as string;
 
-  BoardStore.dispatch(MoveCardRequestAction({ oldIndex, newIndex, from: fromColumnId, to: toColumnId, cardId }));
+  // BoardStore.dispatch(MoveCardRequestAction({ oldIndex, newIndex, from: fromColumnId, to: toColumnId, cardId }));
 
-  BoardStore.dispatch(UnlockCardRequestAction({ id: cardId }));
+  BoardStore.dispatch(unlockCardRequestAction({ id: cardId }));
   console.log({ toColumnId, fromColumnId, cardId });
 
   console.log(oldIndex, newIndex);
   await nextTick();
 };
+const createCard = () =>
+  BoardStore.dispatch(createCardRequestAction({ columnId: props.id, userId: userStore.currentUser.id }));
 </script>
 
 <style scoped>
