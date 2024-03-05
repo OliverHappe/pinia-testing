@@ -7,6 +7,9 @@ export declare type AnyBoardAction =
   | ReturnType<typeof deleteCardRequestAction>
   | ReturnType<typeof deleteCardSuccessAction>
   | ReturnType<typeof deleteCardFailureAction>
+  | ReturnType<typeof createCardRequestAction>
+  | ReturnType<typeof createCardSuccessAction>
+  | ReturnType<typeof createCardFailureAction>
   | ReturnType<typeof lockCardRequestAction>
   | ReturnType<typeof lockCardSuccessAction>
   | ReturnType<typeof lockCardFailureAction>
@@ -27,6 +30,15 @@ export const deleteCardSuccessAction = createAction(
   props<{ columnId: string; cardId: string }>()
 );
 export const deleteCardFailureAction = createAction("delete-card-failure", props<{ error: string }>());
+export const createCardRequestAction = createAction(
+  "create-card-request",
+  props<{ columnId: string; userId: string }>()
+);
+export const createCardSuccessAction = createAction(
+  "create-card-success",
+  props<{ cardId: string; columnId: string; text: string; userId: string }>()
+);
+export const createCardFailureAction = createAction("create-card-failure", props<{ error: string }>());
 export const lockCardRequestAction = createAction("lock-card-request", props<{ id: string; userId: string }>());
 export const lockCardSuccessAction = createAction("lock-card-success", props<{ id: string; userId: string }>());
 export const lockCardFailureAction = createAction("lock-card-failure", props<{ error: string }>());

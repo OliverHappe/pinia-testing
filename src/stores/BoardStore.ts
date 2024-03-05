@@ -5,6 +5,7 @@ import {
   lockCardSuccessAction,
   unlockCardSuccessAction,
   updateCardSuccessAction,
+  createCardSuccessAction,
 } from "@/types/BoardStore/Actions";
 import { User } from "@/types/UserStore/User";
 import { defineStore } from "pinia";
@@ -62,6 +63,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
       case "unlock-card-request":
       case "update-card-request":
       case "delete-card-request":
+      case "create-card-request":
         emitOnSocket(action);
         break;
 
@@ -77,11 +79,15 @@ export const useBoardStore = defineStore("BoardStore", () => {
       case "delete-card-success":
         deleteCard(action);
         break;
+      case "create-card-success":
+        createCard(action);
+        break;
 
       case "lock-card-failure":
       case "unlock-card-failure":
       case "update-card-failure":
       case "delete-card-failure":
+      case "create-card-failure":
         throw new Error(action.type + " " + JSON.stringify(action.payload));
     }
   }
@@ -122,6 +128,14 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
     columns.value[columnId].cards.splice(cardIndex, 1);
     delete cards.value[cardId];
+  }
+
+  function createCard(action: ReturnType<typeof createCardSuccessAction>): void {
+    const { cardId, columnId, text } = action.payload;
+    console.log(`creating the card: ${cardId} in column: ${columnId}`);
+
+    columns.value[columnId].cards.push(cardId);
+    cards.value[cardId] = { id: cardId, text };
   }
 
   return {
