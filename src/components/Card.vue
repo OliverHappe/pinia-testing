@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { useBoardStore } from "@/stores/BoardStore";
 import { useUserStore } from "@/stores/UserStore";
-import { LockCardRequestAction, UnlockCardRequestAction, UpdateCardRequestAction } from "@/types/BoardStore/Actions";
+import { lockCardRequestAction, unlockCardRequestAction, updateCardRequestAction } from "@/types/BoardStore/Actions";
 import { computed, defineProps, defineEmits } from "vue";
 
 const emit = defineEmits(["delete:card"]);
@@ -39,9 +39,9 @@ const isDisabled = computed(() => {
 });
 
 const lockCard = (cardId: string) =>
-  boardStore.dispatch(LockCardRequestAction({ id: cardId, userId: userStore.currentUser.id }));
-const unlockCard = (cardId: string) => boardStore.dispatch(UnlockCardRequestAction({ id: cardId }));
-const updateCard = () => boardStore.dispatch(UpdateCardRequestAction({ id: props.id, text: card.value?.text ?? "" }));
+  boardStore.dispatch(lockCardRequestAction({ id: cardId, userId: userStore.currentUser.id }));
+const unlockCard = (cardId: string) => boardStore.dispatch(unlockCardRequestAction({ id: cardId }));
+const updateCard = () => boardStore.dispatch(updateCardRequestAction({ id: props.id, text: card.value?.text ?? "" }));
 const onDelete = () => {
   if (isDisabled.value) return;
   emit("delete:card", props.id);

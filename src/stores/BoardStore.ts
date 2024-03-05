@@ -1,10 +1,10 @@
 import { useBoardApi } from "@/stores/BoardApi";
 import {
   AnyBoardAction,
-  DeleteCardSuccessAction,
-  LockCardSuccessAction,
-  UnlockCardSuccessAction,
-  UpdateCardSuccessAction,
+  deleteCardSuccessAction,
+  lockCardSuccessAction,
+  unlockCardSuccessAction,
+  updateCardSuccessAction,
 } from "@/types/BoardStore/Actions";
 import { User } from "@/types/UserStore/User";
 import { defineStore } from "pinia";
@@ -86,18 +86,18 @@ export const useBoardStore = defineStore("BoardStore", () => {
     }
   }
 
-  function lockCard(action: ReturnType<typeof LockCardSuccessAction>) {
+  function lockCard(action: ReturnType<typeof lockCardSuccessAction>) {
     // frontend only action
     lockedCards.value[action.payload.id] = action.payload.userId;
   }
 
-  function unlockCard(action: ReturnType<typeof UnlockCardSuccessAction>) {
+  function unlockCard(action: ReturnType<typeof unlockCardSuccessAction>) {
     // @/server/v3/api9
     // coming from the api-client
     delete lockedCards.value[action.payload.id];
   }
 
-  function updateCard(action: ReturnType<typeof UpdateCardSuccessAction>) {
+  function updateCard(action: ReturnType<typeof updateCardSuccessAction>) {
     console.log("updating the card");
     cards.value[action.payload.id] = action.payload;
   }
@@ -114,7 +114,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
     return computed(() => columns.value[columnId]);
   }
 
-  function deleteCard(action: ReturnType<typeof DeleteCardSuccessAction>): void {
+  function deleteCard(action: ReturnType<typeof deleteCardSuccessAction>): void {
     const { cardId, columnId } = action.payload;
     console.log(`deleting the card: ${cardId} from column: ${columnId}`);
 
