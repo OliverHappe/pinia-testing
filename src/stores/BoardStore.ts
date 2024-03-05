@@ -3,6 +3,7 @@ import {
   AnyBoardAction,
   DeleteCardSuccessAction,
   LockCardSuccessAction,
+  MoveCardSuccessAction,
   UnlockCardSuccessAction,
   UpdateCardSuccessAction,
 } from "@/types/BoardStore/Actions";
@@ -62,6 +63,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
       case "unlock-card-request":
       case "update-card-request":
       case "delete-card-request":
+      case "move-card-request":
         emitOnSocket(action);
         break;
 
@@ -76,6 +78,9 @@ export const useBoardStore = defineStore("BoardStore", () => {
         break;
       case "delete-card-success":
         deleteCard(action);
+        break;
+      case "move-card-success":
+        moveCard(action);
         break;
 
       case "lock-card-failure":
@@ -124,11 +129,17 @@ export const useBoardStore = defineStore("BoardStore", () => {
     delete cards.value[cardId];
   }
 
+  function moveCard(action: ReturnType<typeof MoveCardSuccessAction>): void {
+    const { newIndex, oldIndex, from, to, cardId } = action.payload;
+    const card = columns.value[from].cards.splice(oldIndex, 1)[0];
+    columns.value[to].cards.splice(newIndex, 0, card);
+  }
+
   return {
     dispatch,
-    board: computed(() => board.value),
-    columns: computed(() => columns.value),
-    cards: computed(() => cards.value),
+    board: board,
+    columns: columns,
+    cards: cards,
     lockedCards: computed(() => lockedCards.value),
     selectCardLock,
     selectCard,

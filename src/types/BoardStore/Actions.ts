@@ -11,9 +11,11 @@ export declare type AnyBoardAction =
   | ILockCardSuccessAction
   | ILockCardFailureAction
   | IUnlockCardRequestAction
-  | IUnlockCardRequestAction
   | IUnlockCardSuccessAction
-  | IUnlockCardFailureAction;
+  | IUnlockCardFailureAction
+  | IMoveCardRequestAction
+  | IMoveCardSuccessAction
+  | IMoveCardFailureAction;
 
 export const UpdateCardRequestAction = createAction<IUpdateCardRequestAction>("update-card-request");
 export const UpdateCardSuccessAction = createAction<IUpdateCardSuccessAction>("update-card-success");
@@ -27,6 +29,9 @@ export const LockCardFailureAction = createAction<ILockCardFailureAction>("lock-
 export const UnlockCardRequestAction = createAction<IUnlockCardRequestAction>("unlock-card-request");
 export const UnlockCardSuccessAction = createAction<IUnlockCardSuccessAction>("unlock-card-success");
 export const UnlockCardFailureAction = createAction<IUnlockCardFailureAction>("unlock-card-failure");
+export const MoveCardRequestAction = createAction<IMoveCardRequestAction>("move-card-request");
+export const MoveCardSuccessAction = createAction<IMoveCardSuccessAction>("move-card-success");
+export const MoveCardFailureAction = createAction<IMoveCardFailureAction>("move-card-failure");
 // export const UnlockCardAction = createAction<IUnlockCardAction>("unlock-card");
 // export const UnlockCardAction = createAction<IUnlockCardAction>("unlock-card");
 export const NoPayloadAction = createAction<INoPayloadAction>("no-payload-action");
@@ -86,6 +91,21 @@ interface IUnlockCardSuccessAction extends BaseAction {
 }
 interface IUnlockCardFailureAction extends BaseAction {
   type: "unlock-card-failure";
+  payload: unknown;
+}
+
+interface IMoveCardRequestAction extends BaseAction {
+  type: "move-card-request";
+  payload: { newIndex: number; oldIndex: number; from: string; to: string; cardId: string };
+}
+
+interface IMoveCardSuccessAction extends BaseAction {
+  type: "move-card-success";
+  payload: { newIndex: number; oldIndex: number; from: string; to: string; cardId: string };
+}
+
+interface IMoveCardFailureAction extends BaseAction {
+  type: "move-card-failure";
   payload: unknown;
 }
 
