@@ -1,7 +1,10 @@
 import { useBoardApi } from "@/stores/BoardApi";
+import { handle, on } from "@/types/ActionFactory";
 import {
   AnyBoardAction,
   deleteCardSuccessAction,
+  lockCardFailureAction,
+  lockCardRequestAction,
   lockCardSuccessAction,
   unlockCardSuccessAction,
   updateCardSuccessAction,
@@ -57,33 +60,42 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
   function dispatch(action: AnyBoardAction) {
     console.log("dispatchAction", action);
-    switch (action.type) {
-      case "lock-card-request":
-      case "unlock-card-request":
-      case "update-card-request":
-      case "delete-card-request":
-        emitOnSocket(action);
-        break;
 
-      case "update-card-success":
-        updateCard(action);
-        break;
-      case "lock-card-success":
-        lockCard(action);
-        break;
-      case "unlock-card-success":
-        unlockCard(action);
-        break;
-      case "delete-card-success":
-        deleteCard(action);
-        break;
+    handle(
+      action,
+      on(lockCardRequestAction, (payload) => console.log(payload)),
+      on(lockCardSuccessAction, (payload) => console.log(payload)),
+      on(lockCardFailureAction, (payload) => console.log(payload))
+      // on(noPayloadAction, () => console.log(''))
+    );
 
-      case "lock-card-failure":
-      case "unlock-card-failure":
-      case "update-card-failure":
-      case "delete-card-failure":
-        throw new Error(action.type + " " + JSON.stringify(action.payload));
-    }
+    // switch (action.type) {
+    //   case "lock-card-request":
+    //   case "unlock-card-request":
+    //   case "update-card-request":
+    //   case "delete-card-request":
+    //     emitOnSocket(action);
+    //     break;
+
+    //   case "update-card-success":
+    //     updateCard(action);
+    //     break;
+    //   case "lock-card-success":
+    //     lockCard(action);
+    //     break;
+    //   case "unlock-card-success":
+    //     unlockCard(action);
+    //     break;
+    //   case "delete-card-success":
+    //     deleteCard(action);
+    //     break;
+
+    //   case "lock-card-failure":
+    //   case "unlock-card-failure":
+    //   case "update-card-failure":
+    //   case "delete-card-failure":
+    //     throw new Error(action.type + " " + JSON.stringify(action.payload));
+    // }
   }
 
   function lockCard(action: ReturnType<typeof lockCardSuccessAction>) {
