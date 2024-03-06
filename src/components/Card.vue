@@ -6,13 +6,13 @@
       <button v-if="!isDisabled" class="delete-button" @click="onDelete">X</button>
     </div>
 
-    <input
+    <textarea
       v-model="card.text"
       @focus="lockCard(card.id)"
       @blur="unlockCard(card.id)"
       @change="updateCard"
       :disabled="isDisabled"
-    />
+    ></textarea>
   </div>
 </template>
 
@@ -58,8 +58,18 @@ const onDelete = () => {
   display: flex;
   flex-direction: column;
 }
-.card:has(input:disabled) {
+.card:has(textarea:disabled) {
   background: lightgrey;
+}
+textarea {
+  resize: none;
+  height: 150px;
+  border-color: lightgrey;
+  border-radius: 0.25rem;
+
+  &:disabled {
+    background-color: #f3f3f3;
+  }
 }
 
 .card-header {
