@@ -65,6 +65,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
       case "unlock-card-request":
       case "update-card-request":
       case "delete-card-request":
+      case "create-card-request":
       case "move-card-request":
         emitOnSocket(action);
         break;
