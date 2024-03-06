@@ -1,9 +1,15 @@
 <template>
   <div>
-    <div>{{ boardStore.lockedCards }}</div>
+    <div>{{ lockedCards }}</div>
     <div class="board">
-      <div v-for="columnId in boardStore.board.columns" :key="columnId">
-        <Column :id="columnId"></Column>
+      <div>
+        <Sortable tag="div" class="column" :list="board.columns" group="columns" item-key="id">
+          <template #item="{ element, index }">
+            <div>
+              <Column :id="element" :cards="columns[element].cards" :key="index"></Column>
+            </div>
+          </template>
+        </Sortable>
       </div>
     </div>
   </div>
@@ -12,12 +18,18 @@
 <script setup lang="ts">
 import Column from "@/components/Column.vue";
 import { useBoardStore } from "@/stores/BoardStore";
+import { Sortable } from "sortablejs-vue3";
 
 const boardStore = useBoardStore();
+
+const { board, lockedCards, columns } = boardStore;
 </script>
 
 <style scoped>
-.board {
+.board .column {
+  display: flex;
+}
+.column {
   display: flex;
 }
 </style>

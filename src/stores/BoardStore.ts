@@ -1,7 +1,7 @@
 import { useBoardApi } from "@/stores/BoardApi";
-import { Action, PermittedStoreActions, handle, on } from "@/types/ActionFactory";
+import { PermittedStoreActions, handle, on } from "@/types/ActionFactory";
 import * as BoardActions from "@/types/BoardStore/Actions";
-import { AnyBoardAction, lockCardRequestAction } from "@/types/BoardStore/Actions";
+
 import { User } from "@/types/UserStore/User";
 import { defineStore } from "pinia";
 import { ComputedRef, computed, ref } from "vue";
@@ -61,47 +61,56 @@ export const useBoardStore = defineStore("BoardStore", () => {
       on(BoardActions.lockCardFailureAction, (a) => console.log(a))
     );
 
-    // switch (action.type) {
-    //   case "lock-card-request":
-    //   case "unlock-card-request":
-    //   case "update-card-request":
-    //   case "delete-card-request":
-    //     emitOnSocket(action);
-    //     break;
+    switch (action.type) {
+      case "lock-card-request":
+      case "unlock-card-request":
+      case "update-card-request":
+      case "delete-card-request":
+      case "create-card-request":
+      case "move-card-request":
+        emitOnSocket(action);
+        break;
 
-    //   case "update-card-success":
-    //     updateCard(action);
-    //     break;
-    //   case "lock-card-success":
-    //     lockCard(action);
-    //     break;
-    //   case "unlock-card-success":
-    //     unlockCard(action);
-    //     break;
-    //   case "delete-card-success":
-    //     deleteCard(action);
-    //     break;
+      case "update-card-success":
+        updateCard(action);
+        break;
+      case "lock-card-success":
+        lockCard(action);
+        break;
+      case "unlock-card-success":
+        unlockCard(action);
+        break;
+      case "delete-card-success":
+        deleteCard(action);
+        break;
+      case "move-card-success":
+        moveCard(action);
+        break;
+      case "create-card-success":
+        createCard(action);
+        break;
 
-    //   case "lock-card-failure":
-    //   case "unlock-card-failure":
-    //   case "update-card-failure":
-    //   case "delete-card-failure":
-    //     throw new Error(action.type + " " + JSON.stringify(action.payload));
-    // }
+      case "lock-card-failure":
+      case "unlock-card-failure":
+      case "update-card-failure":
+      case "delete-card-failure":
+      case "create-card-failure":
+        throw new Error(action.type + " " + JSON.stringify(action.payload));
+    }
   }
 
-  function lockCard(action: ReturnType<typeof lockCardSuccessAction>) {
+  function lockCard(action: ReturnType<typeof BoardActions.lockCardSuccessAction>) {
     // frontend only action
     lockedCards.value[action.payload.id] = action.payload.userId;
   }
 
-  function unlockCard(action: ReturnType<typeof unlockCardSuccessAction>) {
+  function unlockCard(action: ReturnType<typeof BoardActions.unlockCardSuccessAction>) {
     // @/server/v3/api9
     // coming from the api-client
     delete lockedCards.value[action.payload.id];
   }
 
-  function updateCard(action: ReturnType<typeof updateCardSuccessAction>) {
+  function updateCard(action: ReturnType<typeof BoardActions.updateCardSuccessAction>) {
     console.log("updating the card");
     cards.value[action.payload.id] = action.payload;
   }
@@ -118,7 +127,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
     return computed(() => columns.value[columnId]);
   }
 
-  function deleteCard(action: ReturnType<typeof deleteCardSuccessAction>): void {
+  function deleteCard(action: ReturnType<typeof BoardActions.deleteCardSuccessAction>): void {
     const { cardId, columnId } = action.payload;
     console.log(`deleting the card: ${cardId} from column: ${columnId}`);
 
@@ -128,12 +137,28 @@ export const useBoardStore = defineStore("BoardStore", () => {
     delete cards.value[cardId];
   }
 
+  function createCard(action: ReturnType<typeof BoardActions.createCardSuccessAction>): void {
+    const { cardId, columnId, text } = action.payload;
+    console.log(`creating the card: ${cardId} in column: ${columnId}`);
+
+    columns.value[columnId].cards.push(cardId);
+    cards.value[cardId] = { id: cardId, text };
+  }
+
+  function moveCard(action: ReturnType<typeof BoardActions.moveCardSuccessAction>): void {
+    const { newIndex, oldIndex, from, to, cardId } = action.payload;
+    const card = columns.value[from].cards.splice(oldIndex, 1)[0];
+    columns.value[to].cards.splice(newIndex, 0, card);
+    console.log(`moving card: ${cardId} from column: ${from} to column: ${to}`);
+  }
+
   return {
     dispatch,
-    board: computed(() => board.value),
-    columns: computed(() => columns.value),
-    cards: computed(() => cards.value),
-    lockedCards: computed(() => lockedCards.value),
+    board,
+    columns,
+    cards,
+    lockedCards,
+    moveCard,
     selectCardLock,
     selectCard,
     selectColumn,
