@@ -1,14 +1,7 @@
 import { useBoardApi } from "@/stores/BoardApi";
-import { handle, on } from "@/types/ActionFactory";
-import {
-  AnyBoardAction,
-  deleteCardSuccessAction,
-  lockCardFailureAction,
-  lockCardRequestAction,
-  lockCardSuccessAction,
-  unlockCardSuccessAction,
-  updateCardSuccessAction,
-} from "@/types/BoardStore/Actions";
+import { Action, PermittedStoreActions, handle, on } from "@/types/ActionFactory";
+import * as BoardActions from "@/types/BoardStore/Actions";
+import { AnyBoardAction, lockCardRequestAction } from "@/types/BoardStore/Actions";
 import { User } from "@/types/UserStore/User";
 import { defineStore } from "pinia";
 import { ComputedRef, computed, ref } from "vue";
@@ -57,16 +50,15 @@ export const useBoardStore = defineStore("BoardStore", () => {
   });
 
   const lockedCards = ref<Record<Card["id"], User["id"]>>({ card2: "user23" });
-
-  function dispatch(action: AnyBoardAction) {
+  //
+  function dispatch(action: PermittedStoreActions<typeof BoardActions>) {
     console.log("dispatchAction", action);
 
     handle(
       action,
-      on(lockCardRequestAction, (payload) => console.log(payload)),
-      on(lockCardSuccessAction, (payload) => console.log(payload)),
-      on(lockCardFailureAction, (payload) => console.log(payload))
-      // on(noPayloadAction, () => console.log(''))
+      on(BoardActions.lockCardRequestAction, (a) => console.log(a)),
+      on(BoardActions.lockCardSuccessAction, (a) => console.log(a)),
+      on(BoardActions.lockCardFailureAction, (a) => console.log(a))
     );
 
     // switch (action.type) {

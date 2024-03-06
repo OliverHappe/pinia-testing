@@ -33,6 +33,4 @@ export const lockCardFailureAction = createAction("lock-card-failure", props<{ e
 export const unlockCardRequestAction = createAction("unlock-card-request", props<{ id: string }>());
 export const unlockCardSuccessAction = createAction("unlock-card-success", props<{ id: string }>());
 export const unlockCardFailureAction = createAction("unlock-card-failure", props<{ error: string }>());
-// export const noPayloadAction = createAction("no-payload-action");
-
-// handle(on(updateCardRequestAction, (payload) => console.log(payload)));
+export const noPayloadAction = createAction("no-payload-action", props());
