@@ -1,8 +1,8 @@
-import { AnyBoardAction } from "@/types/BoardStore/Actions";
+import { Action } from "@/types/ActionFactory";
 import { io } from "socket.io-client";
 import { onUnmounted } from "vue";
 
-export const useBoardApi = (dispatch: (action: AnyBoardAction) => void) => {
+export const useBoardApi = (dispatch: (action: Action) => void) => {
   const socket = io(
     "https://bc-6683-poc-board-collaboration-server.dbc.dbildungscloud.dev",
     // "http://localhost:3000",
@@ -20,7 +20,7 @@ export const useBoardApi = (dispatch: (action: AnyBoardAction) => void) => {
     // TODO reconnect?
   });
 
-  const emitOnSocket = (action: AnyBoardAction) => socket.emit(action.type, action.payload);
+  const emitOnSocket = (action: Action) => socket.emit(action.type, action.payload);
 
   onUnmounted(() => {
     socket.close();

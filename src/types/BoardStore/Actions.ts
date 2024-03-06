@@ -36,4 +36,4 @@ export const moveCardSuccessAction = createAction(
   props<{ newIndex: number; oldIndex: number; from: string; to: string; cardId: string }>()
 );
 export const moveCardFailureAction = createAction("move-card-failure", props<{ error: string }>());
-export const noPayloadAction = createAction("no-payload-action");
+// export const noPayloadAction = createAction("no-payload-action");

@@ -3,6 +3,7 @@
     <div class="column" :id="id">
       <div style="margin-top: 2rem">{{ id }}</div>
       <Sortable
+        v-if="renderSortable"
         :options="{
           group: 'cards',
           animation: 250,
@@ -14,6 +15,7 @@
           easing: 'cubic-bezier(1, 0, 0, 1)',
           preventOnFilter: false,
           forceFallback: true,
+          fallbackOnBody: false,
           ghostClass: 'sortable-drag-ghost',
           filter: '.input',
         }"
@@ -26,8 +28,14 @@
         item-key="cardId"
         :data-column-id="id"
       >
-        <template #item="{ element, index }">
-          <Card :data-card-id="element" :id="element" :key="index" @delete:card="onDeleteCard" class="draggable"></Card>
+        <template #item="{ element }">
+          <Card
+            :data-card-id="element"
+            :id="element"
+            :key="element"
+            @delete:card="onDeleteCard"
+            class="draggable"
+          ></Card>
         </template>
       </Sortable>
       <button class="add-button" @click="createCard">+ Add Card</button>
@@ -66,18 +74,14 @@ const onDragStart = (event: SortableEvent) => {
 const onDragEnd = async (event: SortableEvent) => {
   const { oldIndex, newIndex, to, from } = event;
 
-  console.log({ oldIndex, newIndex, to, from });
   if (oldIndex === undefined || newIndex === undefined) return;
 
   const toColumnId = extractDataAttribute(to, "columnId") as string;
   const fromColumnId = extractDataAttribute(from, "columnId") as string;
   const cardId = extractDataAttribute(event.item, "cardId") as string;
-
   BoardStore.dispatch(moveCardRequestAction({ oldIndex, newIndex, from: fromColumnId, to: toColumnId, cardId }));
 
   BoardStore.dispatch(unlockCardRequestAction({ id: cardId }));
-
-  await nextTick();
 };
 const createCard = () =>
   BoardStore.dispatch(createCardRequestAction({ columnId: props.id, userId: userStore.currentUser.id }));

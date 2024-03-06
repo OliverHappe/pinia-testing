@@ -146,10 +146,11 @@ export const useBoardStore = defineStore("BoardStore", () => {
   }
 
   function moveCard(action: ReturnType<typeof BoardActions.moveCardSuccessAction>): void {
-    const { newIndex, oldIndex, from, to, cardId } = action.payload;
-    const card = columns.value[from].cards.splice(oldIndex, 1)[0];
-    columns.value[to].cards.splice(newIndex, 0, card);
-    console.log(`moving card: ${cardId} from column: ${from} to column: ${to}`);
+    const { newIndex, oldIndex, from, to } = action.payload;
+    const newColumns = JSON.parse(JSON.stringify(columns.value));
+    const cardId = newColumns[from].cards.splice(oldIndex, 1)[0];
+    newColumns[to].cards.splice(newIndex, 0, cardId);
+    columns.value = newColumns;
   }
 
   return {
