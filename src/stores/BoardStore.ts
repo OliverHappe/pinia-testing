@@ -1,3 +1,4 @@
+import { moveCardSuccessAction } from "./../types/BoardStore/Actions";
 import { useBoardApi } from "@/stores/BoardApi";
 import {
   AnyBoardAction,
@@ -64,7 +65,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
       case "unlock-card-request":
       case "update-card-request":
       case "delete-card-request":
-        // case "move-card-request":
+      case "move-card-request":
         emitOnSocket(action);
         break;
 
@@ -80,9 +81,9 @@ export const useBoardStore = defineStore("BoardStore", () => {
       case "delete-card-success":
         deleteCard(action);
         break;
-      // case "move-card-success":
-      //   moveCard(action);
-      // 	break;
+      case "move-card-success":
+        moveCard(action);
+        break;
       case "create-card-success":
         createCard(action);
         break;
@@ -142,24 +143,20 @@ export const useBoardStore = defineStore("BoardStore", () => {
     cards.value[cardId] = { id: cardId, text };
   }
 
-  // function moveCard(action: ReturnType<typeof MoveCardSuccessAction>): void {
-  //   const { newIndex, oldIndex, from, to, cardId } = action.payload;
-  //   const card = columns.value[from].cards.splice(oldIndex, 1)[0];
-  //   columns.value[to].cards.splice(newIndex, 0, card);
-  // function createCard(action: ReturnType<typeof createCardSuccessAction>): void {
-  //   const { cardId, columnId, text } = action.payload;
-  //   console.log(`creating the card: ${cardId} in column: ${columnId}`);
-
-  //   columns.value[columnId].cards.push(cardId);
-  //   cards.value[cardId] = { id: cardId, text };
-  // }
+  function moveCard(action: ReturnType<typeof moveCardSuccessAction>): void {
+    const { newIndex, oldIndex, from, to, cardId } = action.payload;
+    const card = columns.value[from].cards.splice(oldIndex, 1)[0];
+    columns.value[to].cards.splice(newIndex, 0, card);
+    console.log(`moving card: ${cardId} from column: ${from} to column: ${to}`);
+  }
 
   return {
     dispatch,
-    board: board,
-    columns: columns,
-    cards: cards,
-    lockedCards: computed(() => lockedCards.value),
+    board,
+    columns,
+    cards,
+    lockedCards,
+    moveCard,
     selectCardLock,
     selectCard,
     selectColumn,

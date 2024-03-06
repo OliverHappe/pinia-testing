@@ -16,6 +16,9 @@ export declare type AnyBoardAction =
   | ReturnType<typeof unlockCardRequestAction>
   | ReturnType<typeof unlockCardSuccessAction>
   | ReturnType<typeof unlockCardFailureAction>
+  | ReturnType<typeof moveCardRequestAction>
+  | ReturnType<typeof moveCardSuccessAction>
+  | ReturnType<typeof moveCardFailureAction>
   | ReturnType<typeof noPayloadAction>;
 
 export const updateCardRequestAction = createAction("update-card-request", props<{ id: string; text: string }>());
@@ -45,4 +48,13 @@ export const lockCardFailureAction = createAction("lock-card-failure", props<{ e
 export const unlockCardRequestAction = createAction("unlock-card-request", props<{ id: string }>());
 export const unlockCardSuccessAction = createAction("unlock-card-success", props<{ id: string }>());
 export const unlockCardFailureAction = createAction("unlock-card-failure", props<{ error: string }>());
+export const moveCardRequestAction = createAction(
+  "move-card-request",
+  props<{ newIndex: number; oldIndex: number; from: string; to: string; cardId: string }>()
+);
+export const moveCardSuccessAction = createAction(
+  "move-card-success",
+  props<{ newIndex: number; oldIndex: number; from: string; to: string; cardId: string }>()
+);
+export const moveCardFailureAction = createAction("move-card-failure", props<{ error: string }>());
 export const noPayloadAction = createAction("no-payload-action");

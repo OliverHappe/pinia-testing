@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div>{{ boardStore.lockedCards }}</div>
+    <div>{{ lockedCards }}</div>
     <div class="board">
       <div>
-        <Sortable tag="div" class="column" :list="boardStore.board.columns" group="columns" item-key="id">
+        <Sortable tag="div" class="column" :list="board.columns" group="columns" item-key="id">
           <template #item="{ element, index }">
             <div>
-              <Column :id="element" :key="index"></Column>
+              <Column :id="element" :cards="columns[element].cards" :key="index"></Column>
             </div>
           </template>
         </Sortable>
@@ -21,6 +21,8 @@ import { useBoardStore } from "@/stores/BoardStore";
 import { Sortable } from "sortablejs-vue3";
 
 const boardStore = useBoardStore();
+
+const { board, lockedCards, columns } = boardStore;
 </script>
 
 <style scoped>

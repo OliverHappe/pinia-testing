@@ -1,5 +1,5 @@
 <template>
-  <template v-if="column !== undefined">
+  <template v-if="id !== undefined">
     <div class="column" :id="id">
       <div style="margin-top: 2rem">{{ id }}</div>
       <Sortable
@@ -19,7 +19,7 @@
         }"
         tag="div"
         class="sortable-column"
-        :list="column.cards"
+        :list="cards"
         group="cards"
         @start="onDragStart"
         @end="onDragEnd"
@@ -30,12 +30,7 @@
           <Card :data-card-id="element" :id="element" :key="index" @delete:card="onDeleteCard" class="draggable"></Card>
         </template>
       </Sortable>
-      <div class="column">
-        <div v-for="cardId in column.cards" :key="cardId">
-          <Card :id="cardId" @delete:card="onDeleteCard"></Card>
-        </div>
-        <button @click="createCard">+ Add Card</button>
-      </div>
+      <button class="add-button" @click="createCard">+ Add Card</button>
     </div>
   </template>
 </template>
@@ -46,9 +41,9 @@ import { useBoardStore } from "@/stores/BoardStore";
 import {
   deleteCardRequestAction,
   lockCardRequestAction,
-  // moveCardRequestAction,
   unlockCardRequestAction,
   createCardRequestAction,
+  moveCardRequestAction,
 } from "@/types/BoardStore/Actions";
 import { defineProps, nextTick } from "vue";
 import { Sortable } from "sortablejs-vue3";
@@ -59,9 +54,7 @@ import { useUserStore } from "@/stores/UserStore";
 const BoardStore = useBoardStore();
 const userStore = useUserStore();
 
-const props = defineProps<{ id: string }>();
-
-const column = BoardStore.selectColumn(props.id);
+const props = defineProps<{ id: string; cards: any[] }>();
 
 const onDeleteCard = (cardId: string) => BoardStore.dispatch(deleteCardRequestAction({ columnId: props.id, cardId }));
 
@@ -71,7 +64,6 @@ const onDragStart = (event: SortableEvent) => {
 };
 
 const onDragEnd = async (event: SortableEvent) => {
-  console.log("drag end", event);
   const { oldIndex, newIndex, to, from } = event;
 
   console.log({ oldIndex, newIndex, to, from });
@@ -81,12 +73,10 @@ const onDragEnd = async (event: SortableEvent) => {
   const fromColumnId = extractDataAttribute(from, "columnId") as string;
   const cardId = extractDataAttribute(event.item, "cardId") as string;
 
-  // BoardStore.dispatch(MoveCardRequestAction({ oldIndex, newIndex, from: fromColumnId, to: toColumnId, cardId }));
+  BoardStore.dispatch(moveCardRequestAction({ oldIndex, newIndex, from: fromColumnId, to: toColumnId, cardId }));
 
   BoardStore.dispatch(unlockCardRequestAction({ id: cardId }));
-  console.log({ toColumnId, fromColumnId, cardId });
 
-  console.log(oldIndex, newIndex);
   await nextTick();
 };
 const createCard = () =>
@@ -99,6 +89,7 @@ const createCard = () =>
   display: flex;
   flex-direction: column;
   margin-right: 1rem;
+  margin-bottom: 0.5rem;
 }
 .sortable-column {
   border: 2px solid lightgrey;
@@ -113,5 +104,13 @@ const createCard = () =>
   opacity: 0.6;
   background-color: #bbb;
   width: 346px;
+}
+.add-button {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border: 1px solid lightgrey;
+  border-radius: 0.25rem;
+  background-color: rgba(211, 211, 211, 0.969);
+  cursor: pointer;
 }
 </style>
