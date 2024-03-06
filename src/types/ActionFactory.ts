@@ -32,8 +32,8 @@ export function handle(action: any, ...ons: ReturnType<typeof on>[]) {
 }
 
 export const on = <
-  T extends ActionFactory<string, Props>,
-  // K extends ActionFactory<ReturnType<T>["type"], ReturnType<T>["payload"]>,
+  T extends ActionFactory<any, any>,
+  K extends ActionFactory<ReturnType<T>["type"], ReturnType<T>["payload"]>,
   P extends ReturnType<T>["payload"]
 >(
   action: T,
