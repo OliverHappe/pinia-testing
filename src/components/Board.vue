@@ -4,9 +4,9 @@
     <div class="board">
       <div>
         <Sortable tag="div" class="column" :list="board.columns" group="columns" item-key="id">
-          <template #item="{ element, index }">
+          <template #item="{ element }">
             <div>
-              <Column :id="element" :cards="columns[element].cards" :key="index"></Column>
+              <Column :id="element" :cards="columns[element].cards" :key="element"></Column>
             </div>
           </template>
         </Sortable>

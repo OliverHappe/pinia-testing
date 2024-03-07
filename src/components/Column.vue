@@ -14,6 +14,7 @@
           easing: 'cubic-bezier(1, 0, 0, 1)',
           preventOnFilter: false,
           forceFallback: true,
+          fallbackOnBody: false,
           ghostClass: 'sortable-drag-ghost',
           filter: '.input',
         }"
@@ -26,8 +27,14 @@
         item-key="cardId"
         :data-column-id="id"
       >
-        <template #item="{ element, index }">
-          <Card :data-card-id="element" :id="element" :key="index" @delete:card="onDeleteCard" class="draggable"></Card>
+        <template #item="{ element }">
+          <Card
+            :data-card-id="element"
+            :id="element"
+            :key="element"
+            @delete:card="onDeleteCard"
+            class="draggable"
+          ></Card>
         </template>
       </Sortable>
       <button class="add-button" @click="createCard">+ Add Card</button>
@@ -45,7 +52,7 @@ import {
   createCardRequestAction,
   moveCardRequestAction,
 } from "@/types/BoardStore/Actions";
-import { defineProps, nextTick } from "vue";
+import { defineProps } from "vue";
 import { Sortable } from "sortablejs-vue3";
 import { SortableEvent } from "sortablejs";
 import { extractDataAttribute } from "../utils/extractDataAttribute.util";
@@ -66,18 +73,14 @@ const onDragStart = (event: SortableEvent) => {
 const onDragEnd = async (event: SortableEvent) => {
   const { oldIndex, newIndex, to, from } = event;
 
-  console.log({ oldIndex, newIndex, to, from });
   if (oldIndex === undefined || newIndex === undefined) return;
 
   const toColumnId = extractDataAttribute(to, "columnId") as string;
   const fromColumnId = extractDataAttribute(from, "columnId") as string;
   const cardId = extractDataAttribute(event.item, "cardId") as string;
-
   BoardStore.dispatch(moveCardRequestAction({ oldIndex, newIndex, from: fromColumnId, to: toColumnId, cardId }));
 
   BoardStore.dispatch(unlockCardRequestAction({ id: cardId }));
-
-  await nextTick();
 };
 const createCard = () =>
   BoardStore.dispatch(createCardRequestAction({ columnId: props.id, userId: userStore.currentUser.id }));

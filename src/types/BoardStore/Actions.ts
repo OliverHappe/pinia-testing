@@ -1,26 +1,5 @@
 import { createAction, props } from "@/types/ActionFactory";
 
-export declare type AnyBoardAction =
-  | ReturnType<typeof updateCardRequestAction>
-  | ReturnType<typeof updateCardSuccessAction>
-  | ReturnType<typeof updateCardFailureAction>
-  | ReturnType<typeof deleteCardRequestAction>
-  | ReturnType<typeof deleteCardSuccessAction>
-  | ReturnType<typeof deleteCardFailureAction>
-  | ReturnType<typeof createCardRequestAction>
-  | ReturnType<typeof createCardSuccessAction>
-  | ReturnType<typeof createCardFailureAction>
-  | ReturnType<typeof lockCardRequestAction>
-  | ReturnType<typeof lockCardSuccessAction>
-  | ReturnType<typeof lockCardFailureAction>
-  | ReturnType<typeof unlockCardRequestAction>
-  | ReturnType<typeof unlockCardSuccessAction>
-  | ReturnType<typeof unlockCardFailureAction>
-  | ReturnType<typeof moveCardRequestAction>
-  | ReturnType<typeof moveCardSuccessAction>
-  | ReturnType<typeof moveCardFailureAction>
-  | ReturnType<typeof noPayloadAction>;
-
 export const updateCardRequestAction = createAction("update-card-request", props<{ id: string; text: string }>());
 export const updateCardSuccessAction = createAction("update-card-success", props<{ id: string; text: string }>());
 export const updateCardFailureAction = createAction("update-card-failure", props<{ error: string }>());
@@ -57,4 +36,4 @@ export const moveCardSuccessAction = createAction(
   props<{ newIndex: number; oldIndex: number; from: string; to: string; cardId: string }>()
 );
 export const moveCardFailureAction = createAction("move-card-failure", props<{ error: string }>());
-export const noPayloadAction = createAction("no-payload-action");
+// export const noPayloadAction = createAction("no-payload-action");

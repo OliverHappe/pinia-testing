@@ -13,6 +13,7 @@
       @change="updateCard"
       :disabled="isDisabled"
     ></textarea>
+    <slot></slot>
   </div>
 </template>
 
