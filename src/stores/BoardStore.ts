@@ -56,9 +56,12 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
     handle(
       action,
-      on(BoardActions.lockCardRequestAction, (a) => console.log(a)),
-      on(BoardActions.lockCardSuccessAction, (a) => console.log(a)),
-      on(BoardActions.lockCardFailureAction, (a) => console.log(a))
+      on(BoardActions.lockCardSuccessAction, lockCard),
+      on(BoardActions.moveCardSuccessAction, moveCard),
+      on(BoardActions.createCardSuccessAction, createCard),
+      on(BoardActions.deleteCardSuccessAction, deleteCard),
+      on(BoardActions.unlockCardSuccessAction, unlockCard),
+      on(BoardActions.updateCardSuccessAction, updateCard)
     );
 
     switch (action.type) {
@@ -69,25 +72,6 @@ export const useBoardStore = defineStore("BoardStore", () => {
       case "create-card-request":
       case "move-card-request":
         emitOnSocket(action);
-        break;
-
-      case "update-card-success":
-        updateCard(action);
-        break;
-      case "lock-card-success":
-        lockCard(action);
-        break;
-      case "unlock-card-success":
-        unlockCard(action);
-        break;
-      case "delete-card-success":
-        deleteCard(action);
-        break;
-      case "move-card-success":
-        moveCard(action);
-        break;
-      case "create-card-success":
-        createCard(action);
         break;
 
       case "lock-card-failure":

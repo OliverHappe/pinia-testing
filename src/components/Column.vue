@@ -3,7 +3,6 @@
     <div class="column" :id="id">
       <div style="margin-top: 2rem">{{ id }}</div>
       <Sortable
-        v-if="renderSortable"
         :options="{
           group: 'cards',
           animation: 250,
@@ -53,7 +52,7 @@ import {
   createCardRequestAction,
   moveCardRequestAction,
 } from "@/types/BoardStore/Actions";
-import { defineProps, nextTick } from "vue";
+import { defineProps } from "vue";
 import { Sortable } from "sortablejs-vue3";
 import { SortableEvent } from "sortablejs";
 import { extractDataAttribute } from "../utils/extractDataAttribute.util";
