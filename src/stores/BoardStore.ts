@@ -1,5 +1,5 @@
 import { useBoardApi } from "@/stores/BoardApi";
-import { PermittedStoreActions, handle, on } from "@/types/ActionFactory";
+import { PermittedStoreActions, handle, on, Action } from "@/types/ActionFactory";
 import * as BoardActions from "@/types/BoardStore/Actions";
 
 import { User } from "@/types/UserStore/User";
@@ -56,31 +56,25 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
     handle(
       action,
-      on(BoardActions.lockCardSuccessAction, lockCard),
-      on(BoardActions.moveCardSuccessAction, moveCard),
+      on(BoardActions.createCardFailureAction, handleFailure),
+      on(BoardActions.createCardRequestAction, emitOnSocket),
       on(BoardActions.createCardSuccessAction, createCard),
+      on(BoardActions.deleteCardFailureAction, handleFailure),
+      on(BoardActions.deleteCardRequestAction, emitOnSocket),
       on(BoardActions.deleteCardSuccessAction, deleteCard),
+      on(BoardActions.lockCardFailureAction, handleFailure),
+      on(BoardActions.lockCardRequestAction, emitOnSocket),
+      on(BoardActions.lockCardSuccessAction, lockCard),
+      on(BoardActions.moveCardFailureAction, handleFailure),
+      on(BoardActions.moveCardRequestAction, emitOnSocket),
+      on(BoardActions.moveCardSuccessAction, moveCard),
+      on(BoardActions.unlockCardFailureAction, handleFailure),
+      on(BoardActions.unlockCardRequestAction, emitOnSocket),
       on(BoardActions.unlockCardSuccessAction, unlockCard),
+      on(BoardActions.updateCardFailureAction, handleFailure),
+      on(BoardActions.updateCardRequestAction, emitOnSocket),
       on(BoardActions.updateCardSuccessAction, updateCard)
     );
-
-    switch (action.type) {
-      case "lock-card-request":
-      case "unlock-card-request":
-      case "update-card-request":
-      case "delete-card-request":
-      case "create-card-request":
-      case "move-card-request":
-        emitOnSocket(action);
-        break;
-
-      case "lock-card-failure":
-      case "unlock-card-failure":
-      case "update-card-failure":
-      case "delete-card-failure":
-      case "create-card-failure":
-        throw new Error(action.type + " " + JSON.stringify(action.payload));
-    }
   }
 
   function lockCard(action: ReturnType<typeof BoardActions.lockCardSuccessAction>) {
@@ -135,6 +129,10 @@ export const useBoardStore = defineStore("BoardStore", () => {
     const cardId = newColumns[from].cards.splice(oldIndex, 1)[0];
     newColumns[to].cards.splice(newIndex, 0, cardId);
     columns.value = newColumns;
+  }
+
+  function handleFailure(action: Action) {
+    throw new Error(action.type + " " + JSON.stringify(action.payload));
   }
 
   return {
