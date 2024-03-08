@@ -98,7 +98,11 @@ export const useBoardStore = defineStore("BoardStore", () => {
       on(BoardActions.unlockCardSuccessAction, unlockCard),
       on(BoardActions.updateCardFailureAction, handleFailure),
       on(BoardActions.updateCardRequestAction, emitOnSocket),
-      on(BoardActions.updateCardSuccessAction, updateCard)
+      on(BoardActions.updateCardSuccessAction, updateCard),
+      on(BoardActions.updateCardFailureAction, handleFailure),
+      on(BoardActions.moveColumnRequestAction, emitOnSocket),
+      on(BoardActions.moveColumnSuccessAction, moveColumn),
+      on(BoardActions.moveCardFailureAction, handleFailure)
     );
   }
 
@@ -149,14 +153,31 @@ export const useBoardStore = defineStore("BoardStore", () => {
   }
 
   function moveCard(action: ReturnType<typeof BoardActions.moveCardSuccessAction>): void {
-    console.log(action.payload);
-    const { newIndex, oldIndex, from, to } = action.payload;
-    const card = board.value.columns[getColumnIndex(from)].cards.splice(oldIndex, 1)[0];
+    const { newIndex, oldIndex, from, to, cardId } = action.payload;
+    const card = getCard(getColumnIndex(from), cardId);
+    if (!card) return;
+
+    board.value.columns[getColumnIndex(from)].cards.splice(oldIndex, 1);
     board.value.columns[getColumnIndex(to)].cards.splice(newIndex, 0, card);
+
+    console.log(`${cardId} is moved from column: ${from} to column: ${to}`);
+  }
+
+  function moveColumn(action: ReturnType<typeof BoardActions.moveColumnSuccessAction>): void {
+    const { newIndex, oldIndex, columnId } = action.payload;
+    const column = board.value.columns.find((column) => column.id === columnId);
+    if (!column) return;
+
+    board.value.columns.splice(oldIndex, 1);
+    board.value.columns.splice(newIndex, 0, ...[column]);
   }
 
   const getColumnIndex = (columnId: Column["id"]) => {
     return board.value.columns.findIndex((column) => column.id === columnId);
+  };
+
+  const getCard = (columnIndex: number, cardId: Card["id"]) => {
+    return board.value.columns[columnIndex].cards.find((card) => card.id === cardId);
   };
 
   function handleFailure(action: Action) {
