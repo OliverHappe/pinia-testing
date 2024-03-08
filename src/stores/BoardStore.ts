@@ -37,16 +37,20 @@ export const useBoardStore = defineStore("BoardStore", () => {
       },
       {
         id: "column2",
-        cards: [
-          { id: "card4", text: "" },
-          { id: "card5", text: "" },
-          { id: "card6", text: "MyContent" },
-        ],
+        cards: [{ id: "card4", text: "" }],
+      },
+      {
+        id: "column3",
+        cards: [],
+      },
+      {
+        id: "column4",
+        cards: [],
       },
     ],
   });
 
-  const lockedCards = ref<Record<Card["id"], User>>({ card2: { id: "user23", name: "Peter" } });
+  const lockedCards = ref<Record<Card["id"], User>>({});
 
   function dispatch(action: PermittedStoreActions<typeof BoardActions>) {
     console.log("dispatchAction", action);
