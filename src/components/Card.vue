@@ -2,7 +2,7 @@
   <div v-if="card !== undefined" class="card" :class="{ draggable: !isDisabled }">
     <div class="card-header">
       {{ card.id }}
-      {{ boardStore.selectCardLock(card.id) }}
+      {{ lockedFor }}
       <button v-if="!isDisabled" class="delete-button" @click="onDelete">X</button>
     </div>
 
@@ -35,12 +35,16 @@ const card = boardStore.selectCard(props.id);
 const cardLock = boardStore.selectCardLock(props.id);
 
 const isDisabled = computed(() => {
-  const userId = cardLock.value;
+  const userId = cardLock.value?.id;
   return userId !== undefined && userId !== userStore.currentUser.id;
 });
 
+const lockedFor = computed(() => cardLock.value?.name ?? "");
+
 const lockCard = (cardId: string) =>
-  boardStore.dispatch(lockCardRequestAction({ id: cardId, userId: userStore.currentUser.id }));
+  boardStore.dispatch(
+    lockCardRequestAction({ id: cardId, userId: userStore.currentUser.id, userName: userStore.currentUser.name })
+  );
 const unlockCard = (cardId: string) => boardStore.dispatch(unlockCardRequestAction({ id: cardId }));
 const updateCard = () => boardStore.dispatch(updateCardRequestAction({ id: props.id, text: card.value?.text ?? "" }));
 const onDelete = () => {

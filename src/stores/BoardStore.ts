@@ -46,7 +46,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
     ],
   });
 
-  const lockedCards = ref<Record<Card["id"], User["id"]>>({ card2: "user23" });
+  const lockedCards = ref<Record<Card["id"], User>>({ card2: { id: "user23", name: "Peter" } });
 
   function dispatch(action: PermittedStoreActions<typeof BoardActions>) {
     console.log("dispatchAction", action);
@@ -80,7 +80,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
   function lockCard(action: ReturnType<typeof BoardActions.lockCardSuccessAction>) {
     // frontend only action
-    lockedCards.value[action.payload.id] = action.payload.userId;
+    lockedCards.value[action.payload.id] = { id: action.payload.userId, name: action.payload.userName };
   }
 
   function unlockCard(action: ReturnType<typeof BoardActions.unlockCardSuccessAction>) {
@@ -100,7 +100,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
     });
   }
 
-  function selectCardLock(cardId: Card["id"]): ComputedRef<User["id"] | undefined> {
+  function selectCardLock(cardId: Card["id"]): ComputedRef<User | undefined> {
     return computed(() => lockedCards.value[cardId]);
   }
 

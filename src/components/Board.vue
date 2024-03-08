@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>{{ lockedCards }}</div>
+    <UserName />
     <div class="board">
       <Sortable
         tag="div"
@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import Column from "@/components/Column.vue";
+import UserName from "@/components/UserName.vue";
 import { useBoardStore } from "@/stores/BoardStore";
 import { extractDataAttribute } from "@/utils/extractDataAttribute.util";
 import { Sortable } from "sortablejs-vue3";

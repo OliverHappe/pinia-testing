@@ -21,8 +21,14 @@ export const createCardSuccessAction = createAction(
   props<{ cardId: string; columnId: string; text: string; userId: string }>()
 );
 export const createCardFailureAction = createAction("create-card-failure", props<{ error: string }>());
-export const lockCardRequestAction = createAction("lock-card-request", props<{ id: string; userId: string }>());
-export const lockCardSuccessAction = createAction("lock-card-success", props<{ id: string; userId: string }>());
+export const lockCardRequestAction = createAction(
+  "lock-card-request",
+  props<{ id: string; userId: string; userName: string }>()
+);
+export const lockCardSuccessAction = createAction(
+  "lock-card-success",
+  props<{ id: string; userId: string; userName: string }>()
+);
 export const lockCardFailureAction = createAction("lock-card-failure", props<{ error: string }>());
 export const unlockCardRequestAction = createAction("unlock-card-request", props<{ id: string }>());
 export const unlockCardSuccessAction = createAction("unlock-card-success", props<{ id: string }>());
