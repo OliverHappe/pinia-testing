@@ -24,25 +24,6 @@ interface Board {
 export const useBoardStore = defineStore("BoardStore", () => {
   const { emitOnSocket } = useBoardApi(dispatch);
 
-  const columns = ref<Record<Column["id"], Column>>({
-    column1: {
-      id: "column1",
-      cards: [
-        { id: "card1", text: "" },
-        { id: "card2", text: "MyContent" },
-        { id: "card3", text: "" },
-      ],
-    },
-    column2: {
-      id: "column2",
-      cards: [
-        { id: "card4", text: "" },
-        { id: "card5", text: "" },
-        { id: "card6", text: "MyContent" },
-      ],
-    },
-  });
-
   const board = ref<Board>({
     id: "board1",
     columns: [
@@ -65,17 +46,8 @@ export const useBoardStore = defineStore("BoardStore", () => {
     ],
   });
 
-  const cards = ref<Record<Card["id"], Card>>({
-    card1: { id: "card1", text: "" },
-    card2: { id: "card2", text: "MyContent" },
-    card3: { id: "card3", text: "" },
-    card4: { id: "card4", text: "" },
-    card5: { id: "card5", text: "" },
-    card6: { id: "card6", text: "MyContent" },
-  });
-
   const lockedCards = ref<Record<Card["id"], User["id"]>>({ card2: "user23" });
-  //
+
   function dispatch(action: PermittedStoreActions<typeof BoardActions>) {
     console.log("dispatchAction", action);
 
@@ -115,7 +87,13 @@ export const useBoardStore = defineStore("BoardStore", () => {
 
   function updateCard(action: ReturnType<typeof BoardActions.updateCardSuccessAction>) {
     console.log("updating the card");
-    cards.value[action.payload.id] = action.payload;
+
+    const columnIndex = getParentColumnIndex(action.payload.id);
+    board.value.columns[columnIndex].cards.forEach((card) => {
+      if (card.id === action.payload.id) {
+        card.text = action.payload.text;
+      }
+    });
   }
 
   function selectCardLock(cardId: Card["id"]): ComputedRef<User["id"] | undefined> {
@@ -123,21 +101,23 @@ export const useBoardStore = defineStore("BoardStore", () => {
   }
 
   function selectCard(cardId: Card["id"]): ComputedRef<Card | undefined> {
-    return computed(() => cards.value[cardId]);
+    const columnIndex = getParentColumnIndex(cardId);
+    const card = board.value.columns[columnIndex].cards.find((card) => card.id === cardId);
+    return computed(() => card);
   }
 
   function selectColumn(columnId: Column["id"]): ComputedRef<Column | undefined> {
-    return computed(() => columns.value[columnId]);
+    const columnIndex = getColumnIndex(columnId);
+    return computed(() => board.value.columns[columnIndex]);
   }
 
   function deleteCard(action: ReturnType<typeof BoardActions.deleteCardSuccessAction>): void {
     const { cardId, columnId } = action.payload;
     console.log(`deleting the card: ${cardId} from column: ${columnId}`);
 
-    const cardIndex = board.value.columns[getColumnIndex(columnId)].cards.findIndex((card) => card.id === cardId);
-
-    columns.value[columnId].cards.splice(cardIndex, 1);
-    delete cards.value[cardId];
+    const columnIndex = getColumnIndex(columnId);
+    const cardIndex = board.value.columns[columnIndex].cards.findIndex((card) => card.id === cardId);
+    board.value.columns[columnIndex].cards.splice(cardIndex, 1);
   }
 
   function createCard(action: ReturnType<typeof BoardActions.createCardSuccessAction>): void {
@@ -145,7 +125,6 @@ export const useBoardStore = defineStore("BoardStore", () => {
     console.log(`creating the card: ${cardId} in column: ${columnId}`);
 
     board.value.columns[getColumnIndex(columnId)].cards.push({ id: cardId, text });
-    cards.value[cardId] = { id: cardId, text };
   }
 
   function moveCard(action: ReturnType<typeof BoardActions.moveCardSuccessAction>): void {
@@ -159,6 +138,9 @@ export const useBoardStore = defineStore("BoardStore", () => {
     return board.value.columns.findIndex((column) => column.id === columnId);
   };
 
+  const getParentColumnIndex = (cardId: Card["id"]) => {
+    return board.value.columns.findIndex((column) => column.cards.some((card) => card.id === cardId));
+  };
   function handleFailure(action: Action) {
     throw new Error(action.type + " " + JSON.stringify(action.payload));
   }
@@ -166,8 +148,6 @@ export const useBoardStore = defineStore("BoardStore", () => {
   return {
     dispatch,
     board,
-    columns,
-    cards,
     lockedCards,
     moveCard,
     selectCardLock,

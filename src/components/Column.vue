@@ -61,9 +61,7 @@ import { useUserStore } from "@/stores/UserStore";
 const BoardStore = useBoardStore();
 const userStore = useUserStore();
 
-const props = defineProps<{ column: any }>();
-
-const cards = BoardStore.selectColumn(props.column).value?.cards ?? [];
+const props = defineProps<{ column: { id: string; cards: any[] } }>();
 
 const onDeleteCard = (cardId: string) =>
   BoardStore.dispatch(deleteCardRequestAction({ columnId: props.column.id, cardId }));

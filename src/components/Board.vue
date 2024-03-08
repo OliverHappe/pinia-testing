@@ -41,13 +41,10 @@ import Column from "@/components/Column.vue";
 import { useBoardStore } from "@/stores/BoardStore";
 import { storeToRefs } from "pinia";
 import { Sortable } from "sortablejs-vue3";
-import { toRef } from "vue";
 
 const boardStore = useBoardStore();
 
 const { board, lockedCards } = storeToRefs(boardStore);
-
-// const boardData = toRef(board);
 </script>
 
 <style scoped>
