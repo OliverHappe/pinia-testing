@@ -36,4 +36,13 @@ export const moveCardSuccessAction = createAction(
   props<{ newIndex: number; oldIndex: number; from: string; to: string; cardId: string }>()
 );
 export const moveCardFailureAction = createAction("move-card-failure", props<{ error: string }>());
+export const moveColumnRequestAction = createAction(
+  "move-column-request",
+  props<{ newIndex: number; oldIndex: number; columnId: string }>()
+);
+export const moveColumnSuccessAction = createAction(
+  "move-column-success",
+  props<{ newIndex: number; oldIndex: number; columnId: string }>()
+);
+export const moveColumnFailureAction = createAction("move-column-failure", props<{ error: string }>());
 // export const noPayloadAction = createAction("no-payload-action");

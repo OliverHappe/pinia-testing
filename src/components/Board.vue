@@ -2,36 +2,32 @@
   <div>
     <div>{{ lockedCards }}</div>
     <div class="board">
-      <div>
-        <Sortable
-          tag="div"
-          class="column"
-          :list="board.columns"
-          group="columns"
-          item-key="columns.id"
-          :options="{
-            group: 'columns',
-            animation: 250,
-            bubbleScroll: true,
-            direction: 'horizontal',
-            disabled: false,
-            dragClass: 'sortable-drag',
-            dragoverBubble: false,
-            easing: 'cubic-bezier(1, 0, 0, 1)',
-            preventOnFilter: false,
-            forceFallback: true,
-            fallbackOnBody: false,
-            ghostClass: 'sortable-drag-ghost',
-            filter: '.input',
-          }"
-        >
-          <template #item="{ element }">
-            <div>
-              <Column :column="element" :key="element.id"></Column>
-            </div>
-          </template>
-        </Sortable>
-      </div>
+      <Sortable
+        tag="div"
+        class="column"
+        item-key="id"
+        :list="board.columns"
+        :options="{
+          group: 'columns',
+          animation: 250,
+          bubbleScroll: true,
+          direction: 'horizontal',
+          disabled: false,
+          dragClass: 'sortable-drag',
+          dragoverBubble: false,
+          easing: 'cubic-bezier(1, 0, 0, 1)',
+          preventOnFilter: false,
+          forceFallback: true,
+          fallbackOnBody: false,
+          ghostClass: 'sortable-drag-ghost',
+          filter: '.input',
+        }"
+        @end="onDragEnd"
+      >
+        <template #item="{ element, index }">
+          <Column :data-column-id="element.id" :column="element" :key="index"></Column>
+        </template>
+      </Sortable>
     </div>
   </div>
 </template>
@@ -39,12 +35,23 @@
 <script setup lang="ts">
 import Column from "@/components/Column.vue";
 import { useBoardStore } from "@/stores/BoardStore";
-import { storeToRefs } from "pinia";
+import { extractDataAttribute } from "@/utils/extractDataAttribute.util";
 import { Sortable } from "sortablejs-vue3";
+import { SortableEvent } from "sortablejs";
+import { moveColumnRequestAction } from "@/types/BoardStore/Actions";
+import { storeToRefs } from "pinia";
 
 const boardStore = useBoardStore();
 
 const { board, lockedCards } = storeToRefs(boardStore);
+
+const onDragEnd = (event: SortableEvent) => {
+  const { oldIndex, newIndex, item } = event;
+  const columnId = extractDataAttribute(item, "columnId") as string;
+
+  if (oldIndex === undefined || newIndex === undefined) return;
+  boardStore.dispatch(moveColumnRequestAction({ oldIndex, newIndex, columnId }));
+};
 </script>
 
 <style scoped>
