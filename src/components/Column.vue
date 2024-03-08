@@ -10,6 +10,7 @@
           direction: 'vertical',
           disabled: false,
           dragClass: 'sortable-drag',
+          draggable: '.draggable',
           dragoverBubble: false,
           easing: 'cubic-bezier(1, 0, 0, 1)',
           preventOnFilter: false,
@@ -28,13 +29,7 @@
         :data-column-id="column.id"
       >
         <template #item="{ element }">
-          <Card
-            :data-card-id="element.id"
-            :id="element.id"
-            :key="element.id"
-            @delete:card="onDeleteCard"
-            class="draggable"
-          ></Card>
+          <Card :data-card-id="element.id" :id="element.id" :key="element.id" @delete:card="onDeleteCard" />
         </template>
       </Sortable>
       <button class="add-button" @click="createCard">+ Add Card</button>
@@ -104,10 +99,15 @@ const createCard = () =>
   flex-direction: column;
   padding-top: 3rem;
 }
+.sortable-drag-ghost.card {
+  width: 346px;
+}
+.sortable-drag-ghost.column {
+  width: 400px;
+}
 .sortable-drag-ghost {
   opacity: 0.6;
   background-color: #bbb;
-  width: 346px;
 }
 .add-button {
   margin: 0.5rem 0;

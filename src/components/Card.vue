@@ -1,5 +1,5 @@
 <template>
-  <div v-if="card !== undefined" class="card">
+  <div v-if="card !== undefined" class="card" :class="{ draggable: !isDisabled }">
     <div class="card-header">
       {{ card.id }}
       {{ boardStore.selectCardLock(card.id) }}

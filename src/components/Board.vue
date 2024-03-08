@@ -13,14 +13,14 @@
           bubbleScroll: true,
           direction: 'horizontal',
           disabled: false,
-          dragClass: 'sortable-drag',
+          draggable: '.column',
           dragoverBubble: false,
           easing: 'cubic-bezier(1, 0, 0, 1)',
           preventOnFilter: false,
           forceFallback: true,
           fallbackOnBody: false,
           ghostClass: 'sortable-drag-ghost',
-          filter: '.input',
+          filter: '.input, .card:not(.draggable)',
         }"
         @end="onDragEnd"
       >
