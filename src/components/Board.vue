@@ -3,10 +3,31 @@
     <div>{{ lockedCards }}</div>
     <div class="board">
       <div>
-        <Sortable tag="div" class="column" :list="board.columns" group="columns" item-key="id">
+        <Sortable
+          tag="div"
+          class="column"
+          :list="board.columns"
+          group="columns"
+          item-key="columns.id"
+          :options="{
+            group: 'columns',
+            animation: 250,
+            bubbleScroll: true,
+            direction: 'horizontal',
+            disabled: false,
+            dragClass: 'sortable-drag',
+            dragoverBubble: false,
+            easing: 'cubic-bezier(1, 0, 0, 1)',
+            preventOnFilter: false,
+            forceFallback: true,
+            fallbackOnBody: false,
+            ghostClass: 'sortable-drag-ghost',
+            filter: '.input',
+          }"
+        >
           <template #item="{ element }">
             <div>
-              <Column :id="element" :cards="columns[element].cards" :key="element"></Column>
+              <Column :column="element" :key="element.id"></Column>
             </div>
           </template>
         </Sortable>
@@ -18,11 +39,15 @@
 <script setup lang="ts">
 import Column from "@/components/Column.vue";
 import { useBoardStore } from "@/stores/BoardStore";
+import { storeToRefs } from "pinia";
 import { Sortable } from "sortablejs-vue3";
+import { toRef } from "vue";
 
 const boardStore = useBoardStore();
 
-const { board, lockedCards, columns } = boardStore;
+const { board, lockedCards } = storeToRefs(boardStore);
+
+// const boardData = toRef(board);
 </script>
 
 <style scoped>

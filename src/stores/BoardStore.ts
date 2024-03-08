@@ -13,31 +13,56 @@ interface Card {
 
 interface Column {
   id: string;
-  cards: Card["id"][];
+  cards: Card[];
 }
 
 interface Board {
   id: string;
-  columns: Column["id"][];
+  columns: Column[];
 }
 
 export const useBoardStore = defineStore("BoardStore", () => {
   const { emitOnSocket } = useBoardApi(dispatch);
 
-  const board = ref<Board>({
-    id: "board1",
-    columns: ["column1", "column2"],
-  });
-
   const columns = ref<Record<Column["id"], Column>>({
     column1: {
       id: "column1",
-      cards: ["card1", "card2", "card3"],
+      cards: [
+        { id: "card1", text: "" },
+        { id: "card2", text: "MyContent" },
+        { id: "card3", text: "" },
+      ],
     },
     column2: {
       id: "column2",
-      cards: ["card4", "card5", "card6"],
+      cards: [
+        { id: "card4", text: "" },
+        { id: "card5", text: "" },
+        { id: "card6", text: "MyContent" },
+      ],
     },
+  });
+
+  const board = ref<Board>({
+    id: "board1",
+    columns: [
+      {
+        id: "column1",
+        cards: [
+          { id: "card1", text: "" },
+          { id: "card2", text: "MyContent" },
+          { id: "card3", text: "" },
+        ],
+      },
+      {
+        id: "column2",
+        cards: [
+          { id: "card4", text: "" },
+          { id: "card5", text: "" },
+          { id: "card6", text: "MyContent" },
+        ],
+      },
+    ],
   });
 
   const cards = ref<Record<Card["id"], Card>>({
@@ -109,7 +134,7 @@ export const useBoardStore = defineStore("BoardStore", () => {
     const { cardId, columnId } = action.payload;
     console.log(`deleting the card: ${cardId} from column: ${columnId}`);
 
-    const cardIndex = columns.value[columnId].cards.findIndex((id) => id === cardId);
+    const cardIndex = board.value.columns[getColumnIndex(columnId)].cards.findIndex((card) => card.id === cardId);
 
     columns.value[columnId].cards.splice(cardIndex, 1);
     delete cards.value[cardId];
@@ -119,17 +144,20 @@ export const useBoardStore = defineStore("BoardStore", () => {
     const { cardId, columnId, text } = action.payload;
     console.log(`creating the card: ${cardId} in column: ${columnId}`);
 
-    columns.value[columnId].cards.push(cardId);
+    board.value.columns[getColumnIndex(columnId)].cards.push({ id: cardId, text });
     cards.value[cardId] = { id: cardId, text };
   }
 
   function moveCard(action: ReturnType<typeof BoardActions.moveCardSuccessAction>): void {
+    console.log(action.payload);
     const { newIndex, oldIndex, from, to } = action.payload;
-    const newColumns = JSON.parse(JSON.stringify(columns.value));
-    const cardId = newColumns[from].cards.splice(oldIndex, 1)[0];
-    newColumns[to].cards.splice(newIndex, 0, cardId);
-    columns.value = newColumns;
+    const card = board.value.columns[getColumnIndex(from)].cards.splice(oldIndex, 1)[0];
+    board.value.columns[getColumnIndex(to)].cards.splice(newIndex, 0, card);
   }
+
+  const getColumnIndex = (columnId: Column["id"]) => {
+    return board.value.columns.findIndex((column) => column.id === columnId);
+  };
 
   function handleFailure(action: Action) {
     throw new Error(action.type + " " + JSON.stringify(action.payload));

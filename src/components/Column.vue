@@ -1,7 +1,7 @@
 <template>
-  <template v-if="id !== undefined">
-    <div class="column" :id="id">
-      <div style="margin-top: 2rem">{{ id }}</div>
+  <template v-if="column !== undefined">
+    <div class="column" :id="column.id">
+      <div style="margin-top: 2rem">{{ column.id }}</div>
       <Sortable
         :options="{
           group: 'cards',
@@ -20,18 +20,18 @@
         }"
         tag="div"
         class="sortable-column"
-        :list="cards"
+        :list="column.cards"
         group="cards"
         @start="onDragStart"
         @end="onDragEnd"
         item-key="cardId"
-        :data-column-id="id"
+        :data-column-id="column.id"
       >
         <template #item="{ element }">
           <Card
-            :data-card-id="element"
-            :id="element"
-            :key="element"
+            :data-card-id="element.id"
+            :id="element.id"
+            :key="element.id"
             @delete:card="onDeleteCard"
             class="draggable"
           ></Card>
@@ -61,9 +61,12 @@ import { useUserStore } from "@/stores/UserStore";
 const BoardStore = useBoardStore();
 const userStore = useUserStore();
 
-const props = defineProps<{ id: string; cards: any[] }>();
+const props = defineProps<{ column: any }>();
 
-const onDeleteCard = (cardId: string) => BoardStore.dispatch(deleteCardRequestAction({ columnId: props.id, cardId }));
+const cards = BoardStore.selectColumn(props.column).value?.cards ?? [];
+
+const onDeleteCard = (cardId: string) =>
+  BoardStore.dispatch(deleteCardRequestAction({ columnId: props.column.id, cardId }));
 
 const onDragStart = (event: SortableEvent) => {
   const cardId = extractDataAttribute(event.item, "cardId") as string;
@@ -83,7 +86,7 @@ const onDragEnd = async (event: SortableEvent) => {
   BoardStore.dispatch(unlockCardRequestAction({ id: cardId }));
 };
 const createCard = () =>
-  BoardStore.dispatch(createCardRequestAction({ columnId: props.id, userId: userStore.currentUser.id }));
+  BoardStore.dispatch(createCardRequestAction({ columnId: props.column.id, userId: userStore.currentUser.id }));
 </script>
 
 <style scoped>
